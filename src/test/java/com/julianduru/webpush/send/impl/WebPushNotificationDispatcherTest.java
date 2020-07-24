@@ -4,32 +4,25 @@ package com.julianduru.webpush.send.impl;
 import com.julianduru.security.Auth;
 import com.julianduru.webpush.NotificationAutoConfiguration;
 import com.julianduru.webpush.TestConstants;
+import com.julianduru.webpush.config.TestBeansConfig;
 import com.julianduru.webpush.config.TestConfig;
 import com.julianduru.webpush.data.DataProvider;
 import com.julianduru.webpush.data.NotificationDataProvider;
 import com.julianduru.webpush.data.NotificationSubscriptionDataProvider;
 import com.julianduru.webpush.entity.Notification;
 import com.julianduru.webpush.entity.NotificationSubscription;
-import com.julianduru.webpush.repository.NotificationSubscriptionRepository;
-import com.julianduru.webpush.send.NotificationDispatcher;
 import com.julianduru.webpush.send.util.HttpResponseListAssert;
-import nl.martijndwars.webpush.PushService;
 import org.apache.http.HttpResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
 
 /**
  * created by julian
@@ -38,6 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 @SpringBootTest(
     classes = {
         TestConfig.class,
+        TestBeansConfig.class,
         NotificationDataProvider.class,
         NotificationSubscriptionDataProvider.class,
         WebPushNotificationDispatcher.class,
@@ -45,6 +39,11 @@ import static org.mockito.ArgumentMatchers.any;
     }
 )
 @WithMockUser(username = TestConstants.TEST_USER_NAME)
+@TestPropertySource(
+    properties = {
+        "test.code.config.mock.push-service-successful=true"
+    }
+)
 public class WebPushNotificationDispatcherTest {
 
 
@@ -83,25 +82,6 @@ public class WebPushNotificationDispatcherTest {
         HttpResponseListAssert.checkList(responseList);
     }
 
-
-    @TestConfiguration
-    static class BeansConfig {
-
-
-        @Bean
-        @Primary
-        public PushService mockPushService() throws Exception {
-            PushService pushService = Mockito.mock(PushService.class);
-
-            Mockito.when(pushService.send(any())).thenAnswer(
-                i -> NotificationDispatcher.defaultSuccessNotifResponse("Sent Notification")
-            );
-
-            return pushService;
-        }
-
-
-    }
 
 
 }

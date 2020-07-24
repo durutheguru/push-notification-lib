@@ -3,7 +3,7 @@ package com.julianduru.webpush.data;
 
 import com.github.javafaker.Faker;
 import com.julianduru.webpush.entity.Notification;
-import com.julianduru.webpush.repository.NotificationRepository;
+import com.julianduru.webpush.rest.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

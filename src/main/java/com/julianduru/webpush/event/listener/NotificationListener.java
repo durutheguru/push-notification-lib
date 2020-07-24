@@ -3,7 +3,7 @@ package com.julianduru.webpush.event.listener;
 
 import com.julianduru.webpush.entity.Notification;
 import com.julianduru.webpush.event.NotificationEvent;
-import com.julianduru.webpush.repository.NotificationRepository;
+import com.julianduru.webpush.rest.NotificationRepository;
 import com.julianduru.webpush.send.NotificationDispatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,6 @@ import org.apache.http.HttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;

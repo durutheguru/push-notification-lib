@@ -28,7 +28,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableAutoConfiguration
 @EnableJpaRepositories(
     basePackages = {
-        "com.julianduru.webpush.repository"
+        "com.julianduru.webpush.rest"
     }
 )
 @EnableConfigurationProperties({

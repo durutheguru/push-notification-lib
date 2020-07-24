@@ -1,4 +1,4 @@
-package com.julianduru.webpush.repository;
+package com.julianduru.webpush.rest;
 
 
 import com.julianduru.webpush.entity.NotificationSubscription;
@@ -7,6 +7,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * created by julian
@@ -23,6 +24,9 @@ public interface NotificationSubscriptionRepository extends JpaRepository<Notifi
 
 
     long countByUserId(String userId);
+
+
+    Optional<NotificationSubscription> findByPublicKeyAndAuthToken(String publicKey, String authToken);
 
 
 }

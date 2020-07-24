@@ -36,6 +36,8 @@ public class SseEmittersTest {
 
     @Test
     public void testAddingSseEmitter() throws Exception {
+        int mapCount = sseEmitters.getEmitterMap().size();
+
         SseEmitter emitter = sseEmitters.add(new SseEmitter());
 
         Assert.assertNotNull(emitter);
@@ -43,7 +45,7 @@ public class SseEmittersTest {
         Map<String, List<SseEmitter>> emitterMap = sseEmitters.getEmitterMap();
 
         Assert.assertNotNull(emitterMap);
-        Assert.assertEquals(1, emitterMap.get(TestConstants.TEST_USER_NAME).size());
+        Assert.assertEquals(mapCount + 1, emitterMap.get(TestConstants.TEST_USER_NAME).size());
     }
 
 

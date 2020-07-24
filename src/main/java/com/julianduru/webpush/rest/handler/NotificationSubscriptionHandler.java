@@ -1,4 +1,4 @@
-package com.julianduru.webpush.repository.handler;
+package com.julianduru.webpush.rest.handler;
 
 
 import com.julianduru.security.Auth;

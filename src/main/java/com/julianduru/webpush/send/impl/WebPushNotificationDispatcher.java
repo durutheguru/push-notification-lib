@@ -4,7 +4,7 @@ package com.julianduru.webpush.send.impl;
 import com.julianduru.util.JSONUtil;
 import com.julianduru.webpush.entity.Notification;
 import com.julianduru.webpush.entity.NotificationSubscription;
-import com.julianduru.webpush.repository.NotificationSubscriptionRepository;
+import com.julianduru.webpush.rest.NotificationSubscriptionRepository;
 import com.julianduru.webpush.send.NotificationDispatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
