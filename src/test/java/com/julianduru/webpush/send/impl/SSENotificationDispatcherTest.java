@@ -1,6 +1,8 @@
 package com.julianduru.webpush.send.impl;
 
 
+import com.julianduru.security.Auth;
+import com.julianduru.webpush.NotificationAutoConfiguration;
 import com.julianduru.webpush.TestConstants;
 import com.julianduru.webpush.config.TestConfig;
 import com.julianduru.webpush.data.DataProvider;
@@ -28,7 +30,8 @@ import java.util.List;
     TestConfig.class,
     SseEmitters.class,
     SSENotificationDispatcher.class,
-    NotificationDataProvider.class
+    NotificationDataProvider.class,
+    NotificationAutoConfiguration.class,
 })
 @WithMockUser(username = TestConstants.TEST_USER_NAME)
 public class SSENotificationDispatcherTest {
@@ -50,7 +53,10 @@ public class SSENotificationDispatcherTest {
     public void testSendingNotification() throws Exception {
         emitters.add(new SseEmitter());
 
-        Notification notification = dataProvider.provide();
+        Notification sample = new Notification();
+        sample.setUserId(Auth.getUserAuthId(true).authUsername);
+
+        Notification notification = dataProvider.provide(sample);
 
         List<HttpResponse> responseList = dispatcher.sendNotification(notification).get();
 

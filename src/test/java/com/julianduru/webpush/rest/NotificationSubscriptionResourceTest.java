@@ -63,7 +63,7 @@ public class NotificationSubscriptionResourceTest extends BaseRestIntegrationTes
             .andExpect(status().is2xxSuccessful());
 
         Optional<NotificationSubscription> persistedSubscription = subscriptionRepository
-            .findByPublicKeyAndAuthToken(subscription.getPublicKey(), subscription.getAuthToken());
+            .findByEndpoint(subscription.getEndpoint());
 
         assertThat(persistedSubscription.isPresent()).isTrue();
         assertThat(persistedSubscription.get())

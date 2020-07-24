@@ -100,7 +100,6 @@ public class NotificationListenerTest extends BaseServiceIntegrationTest {
     }
 
 
-
     private void testPersistedNotificationFromEvent(NotificationEvent event) throws Exception {
         List<Notification> notifications = notificationRepository
             .findByUserIdAndMessage(event.getUserId(), event.getMessage());
