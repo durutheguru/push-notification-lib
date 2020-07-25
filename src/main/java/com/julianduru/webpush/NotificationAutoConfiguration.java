@@ -21,7 +21,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 )
 @ComponentScan(
     basePackages = {
-        "com.julianduru.util",
         "com.julianduru.webpush"
     }
 )
