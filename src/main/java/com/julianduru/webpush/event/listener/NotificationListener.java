@@ -2,6 +2,7 @@ package com.julianduru.webpush.event.listener;
 
 
 import com.julianduru.webpush.entity.Notification;
+import com.julianduru.webpush.event.NotificationDispatchGateway;
 import com.julianduru.webpush.event.NotificationEvent;
 import com.julianduru.webpush.rest.NotificationRepository;
 import com.julianduru.webpush.send.NotificationDispatcher;
@@ -28,48 +29,13 @@ public class NotificationListener {
     private final NotificationRepository notificationRepository;
 
 
-    private final List<NotificationDispatcher> notificationDispatchers;
+    private final NotificationDispatchGateway notificationDispatchGateway;
 
 
     @TransactionalEventListener(fallbackExecution = true)
     public void handleNotificationEvent(NotificationEvent event) {
-        try {
-            Notification notification = notificationRepository.save(Notification.from(event));
-
-            List<HttpResponse> responseList = sendNotificationToDispatchers(notification);
-
-            long successfulCount = responseList.stream()
-                .filter(r -> (r.getStatusLine().getStatusCode() + "").startsWith("2"))
-                .count();
-
-            notificationRepository.save(notification.received(successfulCount > 0));
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-    }
-
-
-    private List<HttpResponse> sendNotificationToDispatchers(Notification notification) {
-        List<HttpResponse> responseList = new ArrayList<>();
-
-        Future<List<HttpResponse>> responseListFuture;
-        List<Future<List<HttpResponse>>> responseListFutures = new ArrayList<>();
-        for (NotificationDispatcher dispatcher : notificationDispatchers) {
-            responseListFuture = dispatcher.sendNotification(notification);
-            if (responseListFuture != null) {
-                responseListFutures.add(responseListFuture);
-            }
-        }
-
-        responseListFutures.stream().forEach(future -> {
-            try {
-                responseList.addAll(future.get());
-            } catch (InterruptedException | ExecutionException e) {
-                log.error(e.getMessage(), e);
-            }
-        });
-
-        return responseList;
+        List<Notification> notifications = notificationRepository.saveAll(Notification.listFrom(event));
+        notificationDispatchGateway.dispatch(notifications);
     }
 
 

@@ -1,10 +1,8 @@
 package com.julianduru.webpush;
 
 
-import com.julianduru.util.config.CryptoConfig;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -24,15 +22,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "com.julianduru.webpush"
     }
 )
-@EnableAutoConfiguration
-@EnableJpaRepositories(
-    basePackages = {
-        "com.julianduru.webpush.rest"
-    }
+@ConditionalOnProperty(
+    prefix = "code.auto-configure.webpush",
+    name = "enabled",
+    havingValue = "true",
+    matchIfMissing = true
 )
-@EnableConfigurationProperties({
-    CryptoConfig.class
-})
 public class NotificationAutoConfiguration {
 
 

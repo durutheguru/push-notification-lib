@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {
-    NotificationAutoConfiguration.class
+    TestNotificationAutoConfiguration.class
 })
 public abstract class BaseServiceIntegrationTest {
 

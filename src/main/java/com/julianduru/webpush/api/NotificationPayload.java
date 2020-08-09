@@ -1,11 +1,10 @@
-package com.julianduru.webpush.event;
+package com.julianduru.webpush.api;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
 
 /**
  * created by julian
@@ -13,13 +12,17 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class NotificationEvent {
+@Builder
+public class NotificationPayload<T> {
 
 
-    private Set<String> userIds;
+    String type;
 
 
-    private String message;
+    T data;
+
+
+    String message;
 
 
 }

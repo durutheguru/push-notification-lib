@@ -32,6 +32,9 @@ public interface NotificationSubscriptionRepository extends JpaRepository<Notifi
     Optional<NotificationSubscription> findByEndpoint(String endPoint);
 
 
+    boolean existsByEndpoint(String endPoint);
+
+
 }
 
 

@@ -18,6 +18,9 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import java.time.ZonedDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * created by julian
@@ -57,13 +60,19 @@ public class Notification extends BaseEntity {
     private ZonedDateTime viewedTimeStamp;
 
 
-    public static Notification from(NotificationEvent event) {
-        Notification notification = new Notification();
+    public static List<Notification> listFrom(NotificationEvent event) {
+        if (event.getUserIds() == null || event.getUserIds().isEmpty()) {
+            return Collections.emptyList();
+        }
 
-        notification.setUserId(event.getUserId());
-        notification.setMessage(event.getMessage());
+        return event.getUserIds().stream().map(id -> {
+            Notification notification = new Notification();
 
-        return notification;
+            notification.setUserId(id);
+            notification.setMessage(event.getMessage());
+
+            return notification;
+        }).collect(Collectors.toList());
     }
 
 

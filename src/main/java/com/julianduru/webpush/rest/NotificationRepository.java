@@ -5,6 +5,7 @@ import com.julianduru.webpush.entity.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -15,6 +16,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
 
     List<Notification> findByUserIdAndMessage(String userId, String message);
+
+
+    List<Notification> findByUserIdInAndMessage(Collection<String> userIds, String message);
 
 
 

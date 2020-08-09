@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -12,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 /**
  * created by julian
  */
+@AutoConfigureWebMvc
 @AutoConfigureMockMvc
 @RunWith(SpringRunner.class)
 @TestPropertySource(
@@ -23,7 +25,7 @@ public abstract class BaseRestIntegrationTest {
 
 
     @Value("${spring.data.rest.basePath}")
-    protected String API_BASE_PATH;
+    protected String DATA_REST_BASE_PATH;
 
 
     @Autowired
