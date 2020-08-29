@@ -26,8 +26,15 @@ public interface NotificationSubscriptionRepository extends JpaRepository<Notifi
     long countByUserId(String userId);
 
 
-    Optional<NotificationSubscription> findByPublicKeyAndAuthToken(String publicKey, String authToken);
+    List<NotificationSubscription> findByPublicKeyAndAuthToken(String publicKey, String authToken);
+
+
+    Optional<NotificationSubscription> findByEndpoint(String endPoint);
+
+
+    boolean existsByEndpoint(String endPoint);
 
 
 }
+
 

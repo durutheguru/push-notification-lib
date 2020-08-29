@@ -2,6 +2,7 @@ package com.julianduru.webpush.data;
 
 
 import com.github.javafaker.Faker;
+import com.julianduru.util.test.DataProvider;
 import com.julianduru.webpush.entity.NotificationSubscription;
 import com.julianduru.webpush.rest.NotificationSubscriptionRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,10 @@ public class NotificationSubscriptionDataProvider implements DataProvider<Notifi
 
         if (sample.getUserId() != null) {
             subscription.setUserId(sample.getUserId());
+        }
+
+        if (sample.getEndpoint() != null) {
+            subscription.setEndpoint(sample.getEndpoint());
         }
 
         return subscription;

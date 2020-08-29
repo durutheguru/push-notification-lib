@@ -1,14 +1,14 @@
 package com.julianduru.webpush.event.listener;
 
 
+import com.google.common.collect.Sets;
 import com.julianduru.security.Auth;
 import com.julianduru.webpush.BaseServiceIntegrationTest;
 import com.julianduru.webpush.TestConstants;
-import com.julianduru.webpush.data.DataProvider;
-import com.julianduru.webpush.entity.Notification;
+import com.julianduru.util.test.DataProvider;
 import com.julianduru.webpush.entity.NotificationSubscription;
 import com.julianduru.webpush.event.NotificationEvent;
-import com.julianduru.webpush.rest.NotificationRepository;
+import com.julianduru.webpush.event.NotificationEventTestHelper;
 import com.julianduru.webpush.send.sse.Emitters;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +16,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * created by julian
@@ -42,7 +38,7 @@ public class NotificationListenerTest extends BaseServiceIntegrationTest {
 
 
     @Autowired
-    private NotificationRepository notificationRepository;
+    private NotificationEventTestHelper notificationEventTestHelper;
 
 
     @Autowired
@@ -54,11 +50,14 @@ public class NotificationListenerTest extends BaseServiceIntegrationTest {
     public void testFiringNotificationEvent() throws Exception {
         String username = Auth.getUserAuthId(true).authUsername;
 
-        NotificationEvent event = new NotificationEvent(username, "Notification Event " + System.currentTimeMillis());
+        NotificationEvent event = new NotificationEvent(
+            Sets.newHashSet(username),
+            "Notification Event " + System.currentTimeMillis()
+        );
 
         eventPublisher.publishEvent(event);
 
-        testPersistedNotificationFromEvent(event);
+        notificationEventTestHelper.testPersistedNotificationFromEvent(event);
     }
 
 
@@ -71,7 +70,7 @@ public class NotificationListenerTest extends BaseServiceIntegrationTest {
 
         subscriptionDataProvider.save(sample);
 
-        testPublishedEventToUsername(username);
+        notificationEventTestHelper.testPublishedEventToUsername(username);
     }
 
 
@@ -81,42 +80,9 @@ public class NotificationListenerTest extends BaseServiceIntegrationTest {
 
         emitters.add(new SseEmitter());
 
-        testPublishedEventToUsername(username);
+        notificationEventTestHelper.testPublishedEventToUsername(username);
     }
 
-
-    private void  testPublishedEventToUsername(String username) throws Exception {
-        NotificationEvent event = new NotificationEvent(
-            username, "Sample Message Notification" + System.currentTimeMillis());
-
-        eventPublisher.publishEvent(event);
-
-
-        Notification check = new Notification();
-        check.setReceived(true);
-        check.setUserId(username);
-
-        testPersistedNotificationFromEvent(event, check);
-    }
-
-
-
-    private void testPersistedNotificationFromEvent(NotificationEvent event) throws Exception {
-        List<Notification> notifications = notificationRepository
-            .findByUserIdAndMessage(event.getUserId(), event.getMessage());
-
-        assertThat(notifications).isNotEmpty();
-    }
-
-
-    private void testPersistedNotificationFromEvent(NotificationEvent event, Notification check) throws Exception {
-        List<Notification> notifications = notificationRepository
-            .findByUserIdAndMessage(event.getUserId(), event.getMessage());
-
-        assertThat(notifications).isNotEmpty();
-        assertThat(notifications.get(0))
-            .isEqualToComparingOnlyGivenFields(check, "userId", "received");
-    }
 
 
 }

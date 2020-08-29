@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.julianduru.security.entity.BaseEntity;
 import com.julianduru.util.jpa.CryptoConverter;
+import com.julianduru.util.jpa.ZonedDateTimeConverter;
 import com.julianduru.util.json.ZonedDateTimeDeserializer;
 import com.julianduru.util.json.ZonedDateTimeSerializer;
 import com.julianduru.webpush.NotificationConstant;
@@ -46,6 +47,7 @@ public class NotificationSubscription extends BaseEntity {
 
     @JsonSerialize(using = ZonedDateTimeSerializer.class)
     @JsonDeserialize(using = ZonedDateTimeDeserializer.class)
+    @Convert(converter = ZonedDateTimeConverter.class)
     private ZonedDateTime expirationTime;
 
 

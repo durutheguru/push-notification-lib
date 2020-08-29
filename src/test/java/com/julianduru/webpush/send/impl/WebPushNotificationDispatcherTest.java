@@ -6,7 +6,7 @@ import com.julianduru.webpush.NotificationAutoConfiguration;
 import com.julianduru.webpush.TestConstants;
 import com.julianduru.webpush.config.TestBeansConfig;
 import com.julianduru.webpush.config.TestConfig;
-import com.julianduru.webpush.data.DataProvider;
+import com.julianduru.util.test.DataProvider;
 import com.julianduru.webpush.data.NotificationDataProvider;
 import com.julianduru.webpush.data.NotificationSubscriptionDataProvider;
 import com.julianduru.webpush.entity.Notification;

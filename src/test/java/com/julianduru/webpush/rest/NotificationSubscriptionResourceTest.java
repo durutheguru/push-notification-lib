@@ -4,20 +4,18 @@ package com.julianduru.webpush.rest;
 import com.julianduru.security.Auth;
 import com.julianduru.security.config.CORSWebSecurityConfig;
 import com.julianduru.util.JSONUtil;
+import com.julianduru.util.config.DataRestConfig;
 import com.julianduru.webpush.NotificationAutoConfiguration;
 import com.julianduru.webpush.TestConstants;
-import com.julianduru.webpush.data.DataProvider;
+import com.julianduru.util.test.DataProvider;
 import com.julianduru.webpush.data.NotificationSubscriptionDataProvider;
 import com.julianduru.webpush.entity.NotificationSubscription;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
@@ -31,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @SpringBootTest(
     classes = {
+        DataRestConfig.class,
         CORSWebSecurityConfig.class,
         NotificationSubscriptionDataProvider.class,
         NotificationAutoConfiguration.class
@@ -54,20 +53,43 @@ public class NotificationSubscriptionResourceTest extends BaseRestIntegrationTes
         sample.setUserId(Auth.getUserAuthId(true).authUsername);
 
         NotificationSubscription subscription = dataProvider.provide(sample);
+        subscription.setUserId(null);
 
         mockMvc.perform(
-            post(API_BASE_PATH + NotificationSubscriptionRepository.PATH)
+            post(DATA_REST_BASE_PATH + NotificationSubscriptionRepository.PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JSONUtil.asJsonString(subscription))
         ).andDo(print())
             .andExpect(status().is2xxSuccessful());
 
         Optional<NotificationSubscription> persistedSubscription = subscriptionRepository
-            .findByPublicKeyAndAuthToken(subscription.getPublicKey(), subscription.getAuthToken());
+            .findByEndpoint(subscription.getEndpoint());
+
+        subscription.setUserId(sample.getUserId());
 
         assertThat(persistedSubscription.isPresent()).isTrue();
         assertThat(persistedSubscription.get())
             .isEqualToComparingOnlyGivenFields(subscription, "endpoint", "publicKey", "authToken", "userId");
+    }
+
+
+    @Test
+    @Ignore
+    public void testAddingExistingNotificationSubscriptionEndpoint() throws Exception {
+        NotificationSubscription sample = new NotificationSubscription();
+        sample.setEndpoint("http://sample.com");
+
+        dataProvider.save(sample);
+
+
+        NotificationSubscription subscription = dataProvider.provide(sample);
+
+        mockMvc.perform(
+            post(DATA_REST_BASE_PATH + NotificationSubscriptionRepository.PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(JSONUtil.asJsonString(subscription))
+        ).andDo(print())
+            .andExpect(status().is4xxClientError());
     }
 
 
