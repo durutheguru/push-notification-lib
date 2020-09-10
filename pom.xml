@@ -16,7 +16,7 @@
 	<description>Library for handling server-side push notification functionality</description>
 
 	<properties>
-		<artifact.version>0.0.1-SNAPSHOT</artifact.version>
+		<artifact.version>0.1.4-SNAPSHOT</artifact.version>
 		<spring-boot.version>2.2.5.RELEASE</spring-boot.version>
 		<sonar.projectKey.config>durutheguru_push-notification-lib</sonar.projectKey.config>
 		<sonar.organization.config>durutheguru</sonar.organization.config>
