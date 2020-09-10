@@ -7,15 +7,21 @@
 	<parent>
 		<groupId>com.julianduru</groupId>
 		<artifactId>parent-lib</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>0.2.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>push-notification-lib</artifactId>
 	<name>push-notification-lib</name>
+	<artifactId>push-notification-lib</artifactId>
+	<version>${artifact.version}</version>
 	<description>Library for handling server-side push notification functionality</description>
 
 	<properties>
+		<artifact.version>0.0.1-SNAPSHOT</artifact.version>
 		<spring-boot.version>2.2.5.RELEASE</spring-boot.version>
+		<sonar.projectKey.config>durutheguru_push-notification-lib</sonar.projectKey.config>
+		<sonar.organization.config>durutheguru</sonar.organization.config>
+		<sonar.host.url.config>https://sonarcloud.io</sonar.host.url.config>
+		<sonar.qualitygate.wait.config>false</sonar.qualitygate.wait.config>
 		<snippetsDirectory>${project.build.directory}/generated-snippets</snippetsDirectory>
 		<start-class>com.julianduru.webpush.PushNotificationLibApplication</start-class>
 	</properties>
@@ -57,10 +63,11 @@
 			<version>5.1.0</version>
 		</dependency>
 
+
 		<dependency>
 			<groupId>com.julianduru</groupId>
 			<artifactId>security-lib</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>0.3.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -128,6 +135,7 @@
 	</dependencies>
 
 
+
 	<build>
 		<plugins>
 
@@ -190,5 +198,6 @@
 
 		</plugins>
 	</build>
+	
 
 </project>
