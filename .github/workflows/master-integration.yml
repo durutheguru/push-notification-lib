@@ -1,0 +1,70 @@
+name: Master Branch CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+# Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Fetching All
+        run: |
+          git fetch --prune --unshallow
+      - name: Installing GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.2
+        with:
+          versionSpec: '5.2.x'
+      - name: Use GitVersion
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.2
+      - name: Evaluate New Artifact Version
+        run: |
+          NEW_VERSION=${{ steps.gitversion.outputs.semVer }}
+          echo 'Artifact Semantic Version: $NEW_VERSION'
+          sed -i "s/<artifact.version>.*<\/artifact.version>/<artifact.version>${NEW_VERSION}-SNAPSHOT<\/artifact.version>/g" pom.xml
+      - name: Setup Java 14 env
+        uses: actions/setup-java@v1
+        with:
+          java-version: 14
+      - name: Build with Maven
+        run: mvn clean deploy -s settings.xml -f pom.xml
+      - name: Committing Update
+        run: |
+          git config user.email ${{ secrets.GIT_EMAIL }}
+          git config user.name ${{ secrets.GIT_USERNAME }}
+          git add .
+          git commit -m "Master Integration Version - Commit" --allow-empty || true
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          branch: master
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  merge-develop:
+    name: Merge to Develop
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Fetching
+      run: |
+        git fetch --all
+    - name: Merge to Develop
+      uses: devmasx/merge-branch@v1.1.0
+      with:
+        type: now
+        target_branch: develop
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
