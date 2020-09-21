@@ -4,22 +4,23 @@ package com.julianduru.webpush.send.sse;
 import com.julianduru.webpush.TestConstants;
 import com.julianduru.webpush.send.util.HttpResponseListAssert;
 import org.apache.http.HttpResponse;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * created by julian
  */
-@RunWith(SpringRunner.class)
+@ExtendWith({SpringExtension.class})
 @SpringBootTest(
     classes = {
         SseEmitters.class
@@ -40,12 +41,12 @@ public class SseEmittersTest {
 
         SseEmitter emitter = sseEmitters.add(new SseEmitter());
 
-        Assert.assertNotNull(emitter);
+        assertThat(emitter).isNotNull();
 
         Map<String, List<SseEmitter>> emitterMap = sseEmitters.getEmitterMap();
 
-        Assert.assertNotNull(emitterMap);
-        Assert.assertEquals(mapCount + 1, emitterMap.get(TestConstants.TEST_USER_NAME).size());
+        assertThat(emitterMap).isNotNull();
+        assertThat(mapCount + 1).isEqualTo(emitterMap.get(TestConstants.TEST_USER_NAME).size());
     }
 
 

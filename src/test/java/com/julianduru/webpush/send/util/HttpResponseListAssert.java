@@ -2,9 +2,10 @@ package com.julianduru.webpush.send.util;
 
 
 import org.apache.http.HttpResponse;
-import org.junit.Assert;
 
 import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * created by julian
@@ -13,10 +14,10 @@ public class HttpResponseListAssert {
 
 
     public static void checkList(List<HttpResponse> responseList) {
-        Assert.assertTrue(!responseList.isEmpty());
+        assertThat(responseList).isNotEmpty();
 
         for (HttpResponse response : responseList) {
-            Assert.assertEquals(201, response.getStatusLine().getStatusCode());
+            assertThat(response.getStatusLine().getStatusCode()).isEqualTo(201);
         }
     }
 

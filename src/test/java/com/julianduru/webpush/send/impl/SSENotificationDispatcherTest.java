@@ -2,21 +2,21 @@ package com.julianduru.webpush.send.impl;
 
 
 import com.julianduru.security.Auth;
+import com.julianduru.util.test.DataProvider;
 import com.julianduru.webpush.NotificationAutoConfiguration;
 import com.julianduru.webpush.TestConstants;
 import com.julianduru.webpush.config.TestConfig;
-import com.julianduru.util.test.DataProvider;
 import com.julianduru.webpush.data.NotificationDataProvider;
 import com.julianduru.webpush.entity.Notification;
 import com.julianduru.webpush.send.sse.SseEmitters;
 import com.julianduru.webpush.send.util.HttpResponseListAssert;
 import org.apache.http.HttpResponse;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * created by julian
  */
-@RunWith(SpringRunner.class)
+@ExtendWith({SpringExtension.class})
 @SpringBootTest(classes = {
     TestConfig.class,
     SseEmitters.class,
