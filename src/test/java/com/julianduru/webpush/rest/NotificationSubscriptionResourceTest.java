@@ -10,8 +10,9 @@ import com.julianduru.webpush.TestConstants;
 import com.julianduru.util.test.DataProvider;
 import com.julianduru.webpush.data.NotificationSubscriptionDataProvider;
 import com.julianduru.webpush.entity.NotificationSubscription;
-import org.junit.Ignore;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -74,7 +75,7 @@ public class NotificationSubscriptionResourceTest extends BaseRestIntegrationTes
 
 
     @Test
-    @Ignore
+    @Disabled
     public void testAddingExistingNotificationSubscriptionEndpoint() throws Exception {
         NotificationSubscription sample = new NotificationSubscription();
         sample.setEndpoint("http://sample.com");

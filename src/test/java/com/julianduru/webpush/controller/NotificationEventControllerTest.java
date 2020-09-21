@@ -6,7 +6,8 @@ import com.julianduru.webpush.NotificationConstant;
 import com.julianduru.webpush.TestConstants;
 import com.julianduru.webpush.event.NotificationEventTestHelper;
 import com.julianduru.webpush.rest.BaseRestIntegrationTest;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
