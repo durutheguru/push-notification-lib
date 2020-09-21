@@ -10,7 +10,8 @@ import com.julianduru.webpush.entity.NotificationSubscription;
 import com.julianduru.webpush.event.NotificationEvent;
 import com.julianduru.webpush.event.NotificationEventTestHelper;
 import com.julianduru.webpush.send.sse.Emitters;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.test.context.support.WithMockUser;

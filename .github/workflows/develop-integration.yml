@@ -19,7 +19,7 @@ jobs:
       - name: Set Commit Message
         id: commit
         run: |
-          [[ ${{ startsWith(github.head_ref, 'feature/') }} ]] && echo ::set-output name=message::"+semver: feature" \
+          ${{ startsWith(github.head_ref, 'feature/') }} && echo ::set-output name=message::"+semver: feature" \
           || echo ::set-output name=message::"+semver: patch"
       - name: Upgrading Version
         env:
@@ -34,9 +34,9 @@ jobs:
         with:
           branch: develop
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      
-        
-    
+
+
+
 #  merge-master:
 #    name: Merge to Master
 #    needs: [build]
