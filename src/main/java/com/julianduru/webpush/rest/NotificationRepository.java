@@ -58,11 +58,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     );
 
 
-    Page<Notification> findByUserIdAndTimeAddedBetween(
-        String userId, ZonedDateTime afterTime, ZonedDateTime beforeTime
-    );
-
-
 
     List<Notification> findByUserIdInAndMessage(Collection<String> userIds, String message);
 

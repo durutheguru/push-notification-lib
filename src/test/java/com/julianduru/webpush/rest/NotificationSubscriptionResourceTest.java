@@ -5,6 +5,7 @@ import com.julianduru.security.Auth;
 import com.julianduru.security.config.CORSWebSecurityConfig;
 import com.julianduru.util.JSONUtil;
 import com.julianduru.util.config.DataRestConfig;
+import com.julianduru.util.test.JpaDataProvider;
 import com.julianduru.webpush.NotificationAutoConfiguration;
 import com.julianduru.webpush.TestConstants;
 import com.julianduru.util.test.DataProvider;
@@ -41,7 +42,7 @@ public class NotificationSubscriptionResourceTest extends BaseRestIntegrationTes
 
 
     @Autowired
-    DataProvider<NotificationSubscription> dataProvider;
+    JpaDataProvider<NotificationSubscription> dataProvider;
 
 
     @Autowired

@@ -3,6 +3,7 @@ package com.julianduru.webpush.data;
 
 import com.github.javafaker.Faker;
 import com.julianduru.util.test.DataProvider;
+import com.julianduru.util.test.JpaDataProvider;
 import com.julianduru.webpush.entity.Notification;
 import com.julianduru.webpush.rest.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class NotificationDataProvider implements DataProvider<Notification> {
+public class NotificationDataProvider implements JpaDataProvider<Notification> {
 
 
     private final Faker faker;
