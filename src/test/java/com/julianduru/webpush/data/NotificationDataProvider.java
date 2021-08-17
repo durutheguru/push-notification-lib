@@ -30,7 +30,7 @@ public class NotificationDataProvider implements JpaDataProvider<Notification> {
 
     @Override
     public Notification provide() {
-        Notification notification = new Notification();
+        var notification = new Notification();
 
         notification.setId(faker.random().nextLong());
         notification.setUserId(faker.internet().emailAddress());
@@ -42,7 +42,7 @@ public class NotificationDataProvider implements JpaDataProvider<Notification> {
 
     @Override
     public Notification provide(Notification sample) {
-        Notification notification = provide();
+        var notification = provide();
 
         if (sample.getId() != null) {
             notification.setId(sample.getId());

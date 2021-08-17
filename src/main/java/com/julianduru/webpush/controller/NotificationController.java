@@ -28,6 +28,7 @@ public class NotificationController {
     private final NotificationService notificationService;
 
 
+
     @GetMapping
     public PullStreamData<NotificationDTO> fetchUserNotifications(
         @RequestParam("userId") String userId,
