@@ -3,14 +3,13 @@ package com.julianduru.webpush.event.listener;
 
 import com.google.common.collect.Sets;
 import com.julianduru.security.Auth;
+import com.julianduru.util.test.JpaDataProvider;
 import com.julianduru.webpush.BaseServiceIntegrationTest;
 import com.julianduru.webpush.TestConstants;
-import com.julianduru.util.test.DataProvider;
 import com.julianduru.webpush.entity.NotificationSubscription;
 import com.julianduru.webpush.event.NotificationEvent;
 import com.julianduru.webpush.event.NotificationEventTestHelper;
 import com.julianduru.webpush.send.sse.Emitters;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -43,7 +42,7 @@ public class NotificationListenerTest extends BaseServiceIntegrationTest {
 
 
     @Autowired
-    private DataProvider<NotificationSubscription> subscriptionDataProvider;
+    private JpaDataProvider<NotificationSubscription> subscriptionDataProvider;
 
 
 

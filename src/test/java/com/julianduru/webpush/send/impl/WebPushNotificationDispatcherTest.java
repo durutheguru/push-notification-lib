@@ -3,6 +3,7 @@ package com.julianduru.webpush.send.impl;
 
 import com.julianduru.security.Auth;
 import com.julianduru.util.test.DataProvider;
+import com.julianduru.util.test.JpaDataProvider;
 import com.julianduru.webpush.NotificationAutoConfiguration;
 import com.julianduru.webpush.TestConstants;
 import com.julianduru.webpush.config.TestBeansConfig;
@@ -56,7 +57,7 @@ public class WebPushNotificationDispatcherTest {
 
 
     @Autowired
-    DataProvider<NotificationSubscription> subscriptionDataProvider;
+    JpaDataProvider<NotificationSubscription> subscriptionDataProvider;
 
 
 
@@ -67,7 +68,6 @@ public class WebPushNotificationDispatcherTest {
 
         subscriptionDataProvider.save(sample, 2);
     }
-
 
 
     @Test
