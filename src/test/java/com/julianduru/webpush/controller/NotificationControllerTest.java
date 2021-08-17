@@ -20,9 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * created by julian
  */
-@ActiveProfiles({
-    "localtest"
-})
 @SpringBootTest(
     classes = {
         NotificationAutoConfiguration.class
