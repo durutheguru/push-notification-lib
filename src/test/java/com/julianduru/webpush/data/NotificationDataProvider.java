@@ -3,6 +3,7 @@ package com.julianduru.webpush.data;
 
 import com.github.javafaker.Faker;
 import com.julianduru.util.test.DataProvider;
+import com.julianduru.util.test.JpaDataProvider;
 import com.julianduru.webpush.entity.Notification;
 import com.julianduru.webpush.rest.NotificationRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class NotificationDataProvider implements DataProvider<Notification> {
+public class NotificationDataProvider implements JpaDataProvider<Notification> {
 
 
     private final Faker faker;
@@ -29,7 +30,7 @@ public class NotificationDataProvider implements DataProvider<Notification> {
 
     @Override
     public Notification provide() {
-        Notification notification = new Notification();
+        var notification = new Notification();
 
         notification.setId(faker.random().nextLong());
         notification.setUserId(faker.internet().emailAddress());
@@ -41,7 +42,7 @@ public class NotificationDataProvider implements DataProvider<Notification> {
 
     @Override
     public Notification provide(Notification sample) {
-        Notification notification = provide();
+        var notification = provide();
 
         if (sample.getId() != null) {
             notification.setId(sample.getId());
