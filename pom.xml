@@ -12,7 +12,7 @@
 
 	<name>push-notification-lib</name>
 	<artifactId>push-notification-lib</artifactId>
-	<version>0.4.1-SNAPSHOT</version>
+	<version>0.4.3-SNAPSHOT</version>
 	<description>Library for handling server-side push notification functionality</description>
 
 	<properties>
