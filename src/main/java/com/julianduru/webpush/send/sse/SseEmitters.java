@@ -6,6 +6,7 @@ import com.julianduru.security.entity.UserAuthId;
 import com.julianduru.util.JSONUtil;
 import com.julianduru.webpush.exception.ServerSentEventException;
 import com.julianduru.webpush.send.api.OperationStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -49,7 +50,11 @@ public class SseEmitters implements Emitters {
             .map(
                 emitter -> {
                     try {
-                        emitter.send(JSONUtil.asJsonString(obj));
+                        emitter.send(
+                            SseEmitter.event()
+                                .name(authUserId)
+                                .data(JSONUtil.asJsonString(obj), MediaType.APPLICATION_JSON)
+                        );
                         return OperationStatus.success("Sent Server Event");
                     } catch (Exception e) {
                         emitter.completeWithError(e);

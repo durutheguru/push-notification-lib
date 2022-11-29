@@ -2,8 +2,8 @@ package com.julianduru.webpush.send.sse;
 
 
 import com.julianduru.webpush.TestConstants;
+import com.julianduru.webpush.send.api.OperationStatus;
 import com.julianduru.webpush.send.util.HttpResponseListAssert;
-import org.apache.http.HttpResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +54,7 @@ public class SseEmittersTest {
     public void testSendingNotificationThroughSseEmitter() throws Exception {
         sseEmitters.add(new SseEmitter());
 
-        List<HttpResponse> responseList = sseEmitters.send(new Object());
+        List<OperationStatus<String>> responseList = sseEmitters.send(new Object());
 
         HttpResponseListAssert.checkList(responseList);
     }

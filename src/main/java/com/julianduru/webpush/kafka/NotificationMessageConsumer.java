@@ -24,7 +24,8 @@ public class NotificationMessageConsumer {
 
 
     @KafkaListener(
-        topics = {"user-push-notification"}
+        topics = {"user-push-notification"},
+        groupId = "kafkaUserNotificationsListenerContainerFactory"
     )
     public void onMessage(ConsumerRecord<String, String> record) {
         log.info("User Notification Consumer Record: {}", record);
