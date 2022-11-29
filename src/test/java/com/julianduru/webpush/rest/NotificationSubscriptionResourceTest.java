@@ -8,9 +8,7 @@ import com.julianduru.util.config.DataRestConfig;
 import com.julianduru.util.test.JpaDataProvider;
 import com.julianduru.webpush.NotificationAutoConfiguration;
 import com.julianduru.webpush.TestConstants;
-import com.julianduru.util.test.DataProvider;
 import com.julianduru.webpush.data.NotificationSubscriptionDataProvider;
-import com.julianduru.webpush.entity.NotificationSubscription;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

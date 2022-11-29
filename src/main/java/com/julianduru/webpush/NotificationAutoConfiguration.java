@@ -11,12 +11,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
  * created by julian
  */
 @Configuration
-@EntityScan(
-    basePackages = {
-        "com.julianduru.util.jpa",
-        "com.julianduru.webpush.entity"
-    }
-)
 @ComponentScan(
     basePackages = {
         "com.julianduru.webpush"
@@ -29,8 +23,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
     matchIfMissing = true
 )
 public class NotificationAutoConfiguration {
-
-
 
 
 }

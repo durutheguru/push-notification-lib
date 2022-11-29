@@ -6,8 +6,6 @@ import com.julianduru.security.Auth;
 import com.julianduru.util.test.JpaDataProvider;
 import com.julianduru.webpush.BaseServiceIntegrationTest;
 import com.julianduru.webpush.TestConstants;
-import com.julianduru.webpush.entity.NotificationSubscription;
-import com.julianduru.webpush.event.NotificationEvent;
 import com.julianduru.webpush.event.NotificationEventTestHelper;
 import com.julianduru.webpush.send.sse.Emitters;
 import org.junit.jupiter.api.Test;

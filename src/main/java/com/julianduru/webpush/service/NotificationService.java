@@ -1,9 +1,9 @@
 package com.julianduru.webpush.service;
 
 
-import com.julianduru.util.stream.PullStreamDataRequest;
-import com.julianduru.webpush.api.dto.NotificationDTO;
+import com.julianduru.webpush.send.api.PushNotification;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * created by julian
@@ -11,7 +11,7 @@ import org.springframework.data.domain.Page;
 public interface NotificationService {
 
 
-    Page<NotificationDTO> fetchNotifications(String userId, PullStreamDataRequest dataRequest);
+    Page<PushNotification> fetchNotifications(String userId, Pageable pageable);
 
 
 }

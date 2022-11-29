@@ -7,7 +7,8 @@ import com.julianduru.webpush.NotificationAutoConfiguration;
 import com.julianduru.webpush.TestConstants;
 import com.julianduru.webpush.config.TestConfig;
 import com.julianduru.webpush.data.NotificationDataProvider;
-import com.julianduru.webpush.entity.Notification;
+import com.julianduru.webpush.data.PushNotificationDataProvider;
+import com.julianduru.webpush.send.api.PushNotification;
 import com.julianduru.webpush.send.sse.SseEmitters;
 import com.julianduru.webpush.send.util.HttpResponseListAssert;
 import org.apache.http.HttpResponse;
@@ -45,17 +46,17 @@ public class SSENotificationDispatcherTest {
 
 
     @Autowired
-    DataProvider<Notification> dataProvider;
+    PushNotificationDataProvider dataProvider;
 
 
     @Test
     public void testSendingNotification() throws Exception {
         emitters.add(new SseEmitter());
 
-        Notification sample = new Notification();
+        var sample = new PushNotification();
         sample.setUserId(Auth.getUserAuthId(true).authUsername);
 
-        Notification notification = dataProvider.provide(sample);
+        var notification = dataProvider.provide(sample);
 
         List<HttpResponse> responseList = dispatcher.sendNotification(notification).get();
 
@@ -64,3 +65,4 @@ public class SSENotificationDispatcherTest {
 
 
 }
+

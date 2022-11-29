@@ -2,8 +2,6 @@ package com.julianduru.webpush.event;
 
 
 import com.google.common.collect.Sets;
-import com.julianduru.webpush.entity.Notification;
-import com.julianduru.webpush.rest.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;

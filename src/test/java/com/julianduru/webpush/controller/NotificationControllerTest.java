@@ -4,14 +4,11 @@ package com.julianduru.webpush.controller;
 import com.julianduru.webpush.NotificationAutoConfiguration;
 import com.julianduru.webpush.TestConstants;
 import com.julianduru.webpush.data.NotificationDataProvider;
-import com.julianduru.webpush.entity.Notification;
 import com.julianduru.webpush.rest.BaseRestIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;

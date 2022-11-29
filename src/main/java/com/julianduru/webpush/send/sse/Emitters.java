@@ -2,7 +2,7 @@ package com.julianduru.webpush.send.sse;
 
 
 import com.julianduru.webpush.exception.ServerSentEventException;
-import org.apache.http.HttpResponse;
+import com.julianduru.webpush.send.api.OperationStatus;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
@@ -20,10 +20,10 @@ public interface Emitters {
     SseEmitter add(SseEmitter emitter) throws IllegalStateException;
 
 
-    List<HttpResponse> send(String authUserId, Object obj);
+    List<OperationStatus<String>> send(String authUserId, Object obj);
 
 
-    List<HttpResponse> send(Object obj) throws ServerSentEventException;
+    List<OperationStatus<String>> send(Object obj) throws ServerSentEventException;
 
 
 }

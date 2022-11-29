@@ -37,12 +37,11 @@ public class NotificationEventController {
 
 
     @GetMapping(value = "/notification", produces = { MediaType.TEXT_EVENT_STREAM_VALUE })
-    public SseEmitter handleNotificationsRequest(HttpServletResponse response) throws IOException {
+    public SseEmitter handleNotificationSubscription(HttpServletResponse response) throws IOException {
         response.setHeader("Cache-Control", "no-store");
 
-        SseEmitter emitter = sseEmitters.add(new SseEmitter(sseTimeout));
+        var emitter = sseEmitters.add(new SseEmitter(sseTimeout));
         emitter.send("Established Connection...");
-
         return emitter;
     }
 

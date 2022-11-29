@@ -1,12 +1,11 @@
 package com.julianduru.webpush.controller;
 
 
-import com.julianduru.util.stream.PullStreamData;
-import com.julianduru.util.stream.PullStreamDataRequest;
 import com.julianduru.webpush.NotificationConstant;
-import com.julianduru.webpush.api.dto.NotificationDTO;
+import com.julianduru.webpush.send.api.PushNotification;
 import com.julianduru.webpush.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,23 +29,12 @@ public class NotificationController {
 
 
     @GetMapping
-    public PullStreamData<NotificationDTO> fetchUserNotifications(
+    public Page<PushNotification> fetchUserNotifications(
         @RequestParam("userId") String userId,
-        @RequestParam(required = false, defaultValue = "-1") Long before,
-        @RequestParam(required = false, defaultValue = "-1") Long after,
         @RequestParam(required = false, defaultValue = "0") Integer page,
         @RequestParam(required = false, defaultValue = "20") Integer size
     ) {
-        return new PullStreamData<>(
-            notificationService.fetchNotifications(
-                userId,
-                PullStreamDataRequest.builder()
-                    .afterTimeStamp(after)
-                    .beforeTimeStamp(before)
-                    .pageable(PageRequest.of(page, size))
-                    .build()
-            )
-        );
+        return notificationService.fetchNotifications(userId, PageRequest.of(page, size));
     }
 
 

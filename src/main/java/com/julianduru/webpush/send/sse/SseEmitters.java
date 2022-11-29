@@ -3,14 +3,9 @@ package com.julianduru.webpush.send.sse;
 
 import com.julianduru.security.Auth;
 import com.julianduru.security.entity.UserAuthId;
+import com.julianduru.util.JSONUtil;
 import com.julianduru.webpush.exception.ServerSentEventException;
-import com.julianduru.webpush.send.NotificationDispatcher;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.ProtocolVersion;
-import org.apache.http.StatusLine;
-import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.message.BasicStatusLine;
+import com.julianduru.webpush.send.api.OperationStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -45,21 +40,21 @@ public class SseEmitters implements Emitters {
     }
 
 
-    public List<HttpResponse> send(String authUserId, Object obj) {
+    public List<OperationStatus<String>> send(String authUserId, Object obj) {
         List<SseEmitter> emitterList = getEmitters(authUserId);
         List<SseEmitter> failedEmitters = new ArrayList<>();
 
-        List<HttpResponse> responseList = emitterList
+        var responseList = emitterList
             .stream()
             .map(
                 emitter -> {
                     try {
-                        emitter.send(obj);
-                        return NotificationDispatcher.defaultSuccessNotifResponse("Sent Server Event");
+                        emitter.send(JSONUtil.asJsonString(obj));
+                        return OperationStatus.success("Sent Server Event");
                     } catch (Exception e) {
                         emitter.completeWithError(e);
                         failedEmitters.add(emitter);
-                        return NotificationDispatcher.defaultFailedNotifResponse(e.getMessage());
+                        return OperationStatus.failure(e.getMessage());
                     }
                 }
             )
@@ -71,7 +66,7 @@ public class SseEmitters implements Emitters {
     }
 
 
-    public List<HttpResponse> send(Object obj) throws ServerSentEventException {
+    public List<OperationStatus<String>> send(Object obj) throws ServerSentEventException {
         Optional<UserAuthId> authId = Auth.getUserAuthId();
         if (authId.isPresent()) {
             return send(authId.get().authUsername, obj);
