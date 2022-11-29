@@ -39,10 +39,7 @@ public class SseEmitters implements Emitters {
         );
 
         emitter.onCompletion(() -> emitterList.remove(emitter));
-        emitter.onTimeout(() -> {
-            emitter.complete();
-            emitterList.remove(emitter);
-        });
+        emitter.onTimeout(() -> emitterList.remove(emitter));
 
         return emitter;
     }
