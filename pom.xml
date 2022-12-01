@@ -12,7 +12,7 @@
 
 	<name>push-notification-lib</name>
 	<artifactId>push-notification-lib</artifactId>
-	<version>0.4.3-SNAPSHOT</version>
+	<version>0.4.6-SNAPSHOT</version>
 	<description>Library for handling server-side push notification functionality</description>
 
 	<properties>
@@ -28,15 +28,9 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-core</artifactId>
-			<version>3.8.7</version>
-		</dependency>
-
-		<dependency>
 			<groupId>com.julianduru</groupId>
 			<artifactId>security-lib</artifactId>
-			<version>0.7.0-SNAPSHOT</version>
+			<version>0.12.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -63,6 +57,11 @@
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-core</artifactId>
 		</dependency>
 
 		<dependency>
@@ -99,12 +98,13 @@
 			</exclusions>
 		</dependency>
 
+
 		<dependency>
-			<groupId>org.springframework.restdocs</groupId>
-			<artifactId>spring-restdocs-mockmvc</artifactId>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
-			<version>2.0.4.RELEASE</version>
 		</dependency>
+
 
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>

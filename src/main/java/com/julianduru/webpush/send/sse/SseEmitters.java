@@ -6,6 +6,7 @@ import com.julianduru.security.entity.UserAuthId;
 import com.julianduru.util.JSONUtil;
 import com.julianduru.webpush.exception.ServerSentEventException;
 import com.julianduru.webpush.send.api.OperationStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -17,33 +18,28 @@ import java.util.stream.Collectors;
 /**
  * created by julian
  */
+@Slf4j
 @Component
 public class SseEmitters implements Emitters {
 
 
-    private ConcurrentHashMap<String, List<SseEmitter>> sseEmitterMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, UserIDEmittersContainer> sseEmitterMap = new ConcurrentHashMap<>();
 
 
-    public Map<String, List<SseEmitter>> getEmitterMap() {
+    public Map<String, UserIDEmittersContainer> getEmitterMap() {
         return Collections.unmodifiableMap(sseEmitterMap);
     }
 
 
-    public SseEmitter add(SseEmitter emitter) throws IllegalStateException {
-        List<SseEmitter> emitterList = addMapping(
-            Auth.getUserAuthId(true).authUsername, emitter
-        );
-
-        emitter.onCompletion(() -> emitterList.remove(emitter));
-        emitter.onTimeout(() -> emitterList.remove(emitter));
-
-        return emitter;
+    public SseEmitter add(String userId, String token) throws IllegalStateException {
+        return addMapping(userId, token);
     }
 
 
     public List<OperationStatus<String>> send(String authUserId, Object obj) {
-        List<SseEmitter> emitterList = getEmitters(authUserId);
-        List<SseEmitter> failedEmitters = new ArrayList<>();
+        var emittersContainer = sseEmitterMap.get(authUserId);
+        var emitterList = emittersContainer.allEmitters();
+        var failedEmitters = new ArrayList<SseEmitter>();
 
         var responseList = emitterList
             .stream()
@@ -53,10 +49,11 @@ public class SseEmitters implements Emitters {
                         emitter.send(
                             SseEmitter.event()
                                 .name(authUserId)
-                                .data(JSONUtil.asJsonString(obj), MediaType.APPLICATION_JSON)
+                                .data(obj)
                         );
                         return OperationStatus.success("Sent Server Event");
                     } catch (Exception e) {
+                        log.error("Unable to complete emitter Send", e);
                         emitter.completeWithError(e);
                         failedEmitters.add(emitter);
                         return OperationStatus.failure(e.getMessage());
@@ -65,7 +62,7 @@ public class SseEmitters implements Emitters {
             )
             .collect(Collectors.toList());
 
-        emitterList.removeAll(failedEmitters);
+        emittersContainer.removeEmitters(failedEmitters);
 
         return responseList;
     }
@@ -82,21 +79,12 @@ public class SseEmitters implements Emitters {
     }
 
 
-    private List<SseEmitter> addMapping(String authUserId, SseEmitter emitter) {
-        final List<SseEmitter> emitterList = getEmitters(authUserId);
+    private SseEmitter addMapping(String authUserId, String token) {
+        if (!sseEmitterMap.containsKey(authUserId)) {
+            this.sseEmitterMap.put(authUserId, new UserIDEmittersContainer());
+        }
 
-        emitterList.add(emitter);
-
-        this.sseEmitterMap.put(authUserId, emitterList);
-        return emitterList;
-    }
-
-
-    private List<SseEmitter> getEmitters(String authUserId) {
-        List<SseEmitter> emitterList = sseEmitterMap.get(authUserId);
-
-        return emitterList != null ?
-             emitterList : Collections.synchronizedList(new ArrayList<>());
+        return this.sseEmitterMap.get(authUserId).add(token);
     }
 
 

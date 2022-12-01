@@ -14,10 +14,10 @@ import java.util.Map;
 public interface Emitters {
 
 
-    Map<String, List<SseEmitter>> getEmitterMap();
+    Map<String, UserIDEmittersContainer> getEmitterMap();
 
 
-    SseEmitter add(SseEmitter emitter) throws IllegalStateException;
+    SseEmitter add(String userId, String token) throws IllegalStateException;
 
 
     List<OperationStatus<String>> send(String authUserId, Object obj);

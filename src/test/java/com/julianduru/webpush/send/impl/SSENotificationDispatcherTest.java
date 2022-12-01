@@ -5,7 +5,6 @@ import com.julianduru.security.Auth;
 import com.julianduru.webpush.NotificationAutoConfiguration;
 import com.julianduru.webpush.TestConstants;
 import com.julianduru.webpush.config.TestConfig;
-import com.julianduru.webpush.data.NotificationDataProvider;
 import com.julianduru.webpush.data.PushNotificationDataProvider;
 import com.julianduru.webpush.send.api.PushNotification;
 import com.julianduru.webpush.send.sse.SseEmitters;
@@ -18,6 +17,8 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.UUID;
+
 /**
  * created by julian
  */
@@ -26,7 +27,6 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
     TestConfig.class,
     SseEmitters.class,
     SSENotificationDispatcher.class,
-    NotificationDataProvider.class,
     NotificationAutoConfiguration.class,
 })
 @WithMockUser(username = TestConstants.TEST_USER_NAME)
@@ -47,7 +47,7 @@ public class SSENotificationDispatcherTest {
 
     @Test
     public void testSendingNotification() throws Exception {
-        emitters.add(new SseEmitter());
+        emitters.add(TestConstants.TEST_USER_NAME, UUID.randomUUID().toString());
 
         var sample = new PushNotification();
         sample.setUserId(Auth.getUserAuthId(true).authUsername);
