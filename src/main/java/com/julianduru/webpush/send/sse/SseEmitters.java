@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,22 +33,21 @@ public class SseEmitters implements Emitters {
     }
 
 
-    public SseEmitter add(String userId, String token) throws IllegalStateException {
+    public Flux<Object> add(String userId, String token) throws IllegalStateException {
         return addMapping(userId, token);
     }
 
 
     public List<OperationStatus<String>> send(String authUserId, Object obj) {
         var emittersContainer = sseEmitterMap.get(authUserId);
-        var emitterList = emittersContainer.allEmitters();
-        var failedEmitters = new ArrayList<SseEmitter>();
+        var sinkList = emittersContainer.allEmitters();
 
-        var responseList = emitterList
+        return sinkList
             .stream()
             .map(
-                emitter -> {
+                sink -> {
                     try {
-                        emitter.send(
+                        sink.tryEmitNext(
                             SseEmitter.event()
                                 .name(authUserId)
                                 .data(obj)
@@ -54,17 +55,12 @@ public class SseEmitters implements Emitters {
                         return OperationStatus.success("Sent Server Event");
                     } catch (Exception e) {
                         log.error("Unable to complete emitter Send", e);
-                        emitter.completeWithError(e);
-                        failedEmitters.add(emitter);
+                        sink.tryEmitError(e);
                         return OperationStatus.failure(e.getMessage());
                     }
                 }
             )
             .collect(Collectors.toList());
-
-        emittersContainer.removeEmitters(failedEmitters);
-
-        return responseList;
     }
 
 
@@ -79,7 +75,7 @@ public class SseEmitters implements Emitters {
     }
 
 
-    private SseEmitter addMapping(String authUserId, String token) {
+    private Flux<Object> addMapping(String authUserId, String token) {
         if (!sseEmitterMap.containsKey(authUserId)) {
             this.sseEmitterMap.put(authUserId, new UserIDEmittersContainer());
         }

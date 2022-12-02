@@ -3,6 +3,7 @@ package com.julianduru.webpush.send.sse;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
 import java.io.IOException;
@@ -20,7 +21,7 @@ public class UserIDEmittersContainer {
     static Long sseTimeout = 18000000L;
 
 
-    private Map<String, SseEmitter> tokenEmitterMap;
+    private Map<String, Sinks.Many<Object>> tokenEmitterMap;
 
 
     public UserIDEmittersContainer() {
@@ -28,41 +29,24 @@ public class UserIDEmittersContainer {
     }
 
 
-    public SseEmitter add(String token) {
+    public Flux<Object> add(String token) {
         if (tokenEmitterMap.containsKey(token)) {
-            return tokenEmitterMap.get(token);
+            return tokenEmitterMap.get(token).asFlux();
         }
 
-        var sink = Sinks.many().multicast().onBackpressureBuffer();
+        var sink = Sinks.many().multicast()
+            .onBackpressureBuffer();
 
-        var emitter = new SseEmitter(sseTimeout);
+        tokenEmitterMap.put(token, sink);
 
-        emitter.onCompletion(() -> tokenEmitterMap.remove(token));
-        emitter.onTimeout(() -> tokenEmitterMap.remove(token));
+        sink.tryEmitNext("Connection Established");
 
-        tokenEmitterMap.put(token, emitter);
-
-        try {
-            emitter.send(
-                SseEmitter.event()
-                    .reconnectTime(10000000)
-            );
-        }
-        catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-
-        return emitter;
+        return sink.asFlux();
     }
 
 
-    public List<SseEmitter> allEmitters() {
+    public List<Sinks.Many<Object>> allEmitters() {
         return tokenEmitterMap.values().stream().toList();
-    }
-
-
-    public void removeEmitters(List<SseEmitter> emitters) {
-
     }
 
 

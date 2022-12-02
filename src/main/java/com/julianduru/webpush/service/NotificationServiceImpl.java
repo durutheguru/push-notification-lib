@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -73,7 +74,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 
     @Override
-    public SseEmitter handleNotificationSubscription(String tokenString) throws IOException {
+    public Flux<Object> handleNotificationSubscription(String tokenString) throws IOException {
         var tokenOptional = notificationTokenRepository.getUserIdWithToken(tokenString);
         if (tokenOptional.isEmpty()) {
             throw new IllegalArgumentException("Unable to process notification subscription. Invalid token");

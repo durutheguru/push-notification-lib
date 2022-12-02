@@ -40,7 +40,7 @@ public class SseEmittersTest {
     public void testAddingSseEmitter() throws Exception {
         int mapCount = sseEmitters.getEmitterMap().size();
 
-        SseEmitter emitter = sseEmitters.add(TestConstants.TEST_USER_NAME, UUID.randomUUID().toString());
+        var emitter = sseEmitters.add(TestConstants.TEST_USER_NAME, UUID.randomUUID().toString());
 
         assertThat(emitter).isNotNull();
 

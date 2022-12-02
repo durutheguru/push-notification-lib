@@ -16,9 +16,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.time.Duration;
 
 /**
  * created by julian
@@ -57,12 +59,13 @@ public class PushNotificationController {
     @GetMapping(value = "/sse"
         , produces = { MediaType.TEXT_EVENT_STREAM_VALUE }
     )
-    public SseEmitter handleNotificationSubscription(
+    public Flux<Object> handleNotificationSubscription(
         ServerHttpResponse response, @RequestParam("token") String token
     ) throws IOException {
         response.getHeaders().add("Cache-Control", "no-store");
         response.getHeaders().add("Connection", "keep-alive");
         return notificationService.handleNotificationSubscription(token);
+//        return Flux.range(1, 10).delayElements(Duration.ofSeconds(1));
     }
 
 

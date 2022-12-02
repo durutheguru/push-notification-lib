@@ -5,6 +5,7 @@ import com.julianduru.webpush.send.api.PushNotification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 
@@ -18,7 +19,7 @@ public interface NotificationService {
 
     String generateToken(String userId);
 
-    SseEmitter handleNotificationSubscription(String token) throws IOException;
+    Flux<Object> handleNotificationSubscription(String token) throws IOException;
 
 
 }
