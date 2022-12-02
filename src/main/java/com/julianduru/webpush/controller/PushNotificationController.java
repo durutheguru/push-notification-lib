@@ -64,7 +64,16 @@ public class PushNotificationController {
     ) throws IOException {
         response.getHeaders().add("Cache-Control", "no-store");
         response.getHeaders().add("Connection", "keep-alive");
-        return notificationService.handleNotificationSubscription(token);
+        var subscription = notificationService.handleNotificationSubscription(token);
+
+        return Flux.merge(
+            Flux.interval(Duration.ofSeconds(15)),
+            subscription
+        )
+            .delayElements(Duration.ofMillis(1500))
+            .doOnNext(obj -> {
+                log.info("Object received: {}", obj);
+            });
 //        return Flux.range(1, 10).delayElements(Duration.ofSeconds(1));
     }
 

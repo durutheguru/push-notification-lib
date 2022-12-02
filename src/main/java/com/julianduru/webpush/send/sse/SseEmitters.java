@@ -48,9 +48,10 @@ public class SseEmitters implements Emitters {
                 sink -> {
                     try {
                         sink.tryEmitNext(
-                            SseEmitter.event()
-                                .name(authUserId)
-                                .data(obj)
+//                            SseEmitter.event()
+//                                .name(authUserId)
+//                                .data(obj)
+                            JSONUtil.asJsonString(obj)
                         );
                         return OperationStatus.success("Sent Server Event");
                     } catch (Exception e) {

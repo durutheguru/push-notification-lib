@@ -7,6 +7,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,8 @@ public class UserIDEmittersContainer {
 
         tokenEmitterMap.put(token, sink);
 
-        sink.tryEmitNext("Connection Established");
+        sink.tryEmitNext("Connection Established..");
+        sink.tryEmitNext("Waiting for Events..");
 
         return sink.asFlux();
     }
