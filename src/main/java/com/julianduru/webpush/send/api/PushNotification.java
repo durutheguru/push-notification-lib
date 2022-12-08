@@ -30,6 +30,9 @@ public class PushNotification {
     private String message;
 
 
+    private String type;
+
+
     private boolean received;
 
 

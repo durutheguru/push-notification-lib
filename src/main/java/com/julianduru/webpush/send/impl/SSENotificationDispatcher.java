@@ -22,9 +22,6 @@ import java.util.Map;
 public class SSENotificationDispatcher implements NotificationDispatcher {
 
 
-    private static final String NOTIFICATION_EVENT_TYPE = "notification";
-
-
     @Value("${code.config.server-sent-event.retry-timeout-millis}")
     private Long retryInterval;
 
@@ -38,7 +35,7 @@ public class SSENotificationDispatcher implements NotificationDispatcher {
             notification.getUserId(),
             Map.of(
                 "uuid", notification.getUuid(),
-                "event", NOTIFICATION_EVENT_TYPE,
+                "event", notification.getType(),
                 "data", notification.getMessage()
             )
         );

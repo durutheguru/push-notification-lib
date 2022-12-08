@@ -31,14 +31,14 @@ public class NotificationMessageConsumer {
         log.info("User Notification Consumer Record: {}", record);
 
         var value = record.value();
-        int separatorIndex = value.indexOf("|");
-        if (separatorIndex < 1) {
-            log.warn("Unable to process Event. Not the right format.");
-            return;
+        var values = value.split("\\|");
+        if (values.length != 3) {
+            throw new IllegalArgumentException("Cannot process Message Value " + value);
         }
 
-        var userId = value.substring(0, separatorIndex);
-        var message = value.substring(separatorIndex + 1);
+        var userId = values[0];
+        var messageType = values[1];
+        var message = values[2];
 
         dispatchGateway.dispatch(
             List.of(
@@ -46,6 +46,7 @@ public class NotificationMessageConsumer {
                     .uuid(UUID.randomUUID().toString())
                     .userId(userId)
                     .message(message)
+                    .type(messageType)
                     .build()
             )
         );

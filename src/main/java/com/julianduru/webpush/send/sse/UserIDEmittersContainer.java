@@ -31,9 +31,9 @@ public class UserIDEmittersContainer {
 
 
     public Flux<Object> add(String token) {
-        if (tokenEmitterMap.containsKey(token)) {
-            return tokenEmitterMap.get(token).asFlux();
-        }
+//        if (tokenEmitterMap.containsKey(token)) {
+//            return tokenEmitterMap.get(token).asFlux();
+//        }
 
         var sink = Sinks.many().multicast()
             .onBackpressureBuffer();

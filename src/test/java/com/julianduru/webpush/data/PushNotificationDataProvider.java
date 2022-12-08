@@ -18,6 +18,7 @@ public class PushNotificationDataProvider implements DataProvider<PushNotificati
             .uuid(UUID.randomUUID().toString())
             .userId(faker.code().isbn10())
             .message(faker.lorem().sentence())
+            .type(faker.lorem().word())
             .build();
     }
 

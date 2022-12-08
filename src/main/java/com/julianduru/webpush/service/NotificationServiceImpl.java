@@ -77,12 +77,12 @@ public class NotificationServiceImpl implements NotificationService {
     public Flux<Object> handleNotificationSubscription(String tokenString) throws IOException {
         var tokenOptional = notificationTokenRepository.getUserIdWithToken(tokenString);
         if (tokenOptional.isEmpty()) {
-            throw new IllegalArgumentException("Unable to process notification subscription. Invalid token");
+            throw new SecurityException("Unable to process notification subscription. Invalid token");
         }
 
         var token = tokenOptional.get();
         if (token.getExpiresOn().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Token has expired");
+            throw new SecurityException("Token has expired");
         }
 
         return sseEmitters.add(token.getUserId(), token.getToken());

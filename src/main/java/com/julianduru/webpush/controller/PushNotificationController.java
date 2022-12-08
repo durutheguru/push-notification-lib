@@ -56,9 +56,7 @@ public class PushNotificationController {
     }
 
 
-    @GetMapping(value = "/sse"
-        , produces = { MediaType.TEXT_EVENT_STREAM_VALUE }
-    )
+    @GetMapping(value = "/sse", produces = { MediaType.TEXT_EVENT_STREAM_VALUE })
     public Flux<Object> handleNotificationSubscription(
         ServerHttpResponse response, @RequestParam("token") String token
     ) throws IOException {
@@ -67,6 +65,7 @@ public class PushNotificationController {
         var subscription = notificationService.handleNotificationSubscription(token);
 
         return Flux.merge(
+            // single instance hot flux
             Flux.interval(Duration.ofSeconds(15)),
             subscription
         )
@@ -74,7 +73,6 @@ public class PushNotificationController {
             .doOnNext(obj -> {
                 log.info("Object received: {}", obj);
             });
-//        return Flux.range(1, 10).delayElements(Duration.ofSeconds(1));
     }
 
 
