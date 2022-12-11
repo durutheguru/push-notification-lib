@@ -49,7 +49,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 
     @Override
-    public String generateToken(String userId) {
+    public UserIdNotificationToken generateToken(String userId) {
         var token = String.format(
             "%s-%d-%s",
             UUID.randomUUID(),
@@ -57,19 +57,18 @@ public class NotificationServiceImpl implements NotificationService {
             UUID.randomUUID()
         );
 
-        notificationTokenRepository.saveUserSubscriptionToken(
-            UserIdNotificationToken.builder()
-                .userId(userId)
-                .token(token)
-                .expiresOn(
-                    LocalDateTime.now().plusSeconds(
-                        notificationTokenExpiryIntervalInSeconds
-                    )
+        var uidToken = UserIdNotificationToken.builder()
+            .userId(userId)
+            .token(token)
+            .expiresOn(
+                LocalDateTime.now().plusSeconds(
+                    notificationTokenExpiryIntervalInSeconds
                 )
-                .build()
-        );
+            )
+            .build();
 
-        return token;
+        notificationTokenRepository.saveUserSubscriptionToken(uidToken);
+        return uidToken;
     }
 
 

@@ -47,16 +47,12 @@ public class SseEmitters implements Emitters {
             .map(
                 sink -> {
                     try {
-                        sink.tryEmitNext(
-//                            SseEmitter.event()
-//                                .name(authUserId)
-//                                .data(obj)
-                            JSONUtil.asJsonString(obj)
-                        );
+                        sink.tryEmitNext(JSONUtil.asJsonString(obj));
                         return OperationStatus.success("Sent Server Event");
                     } catch (Exception e) {
                         log.error("Unable to complete emitter Send", e);
                         sink.tryEmitError(e);
+                        //TODO: remove dead emitter from list..
                         return OperationStatus.failure(e.getMessage());
                     }
                 }

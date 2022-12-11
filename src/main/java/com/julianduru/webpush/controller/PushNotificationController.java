@@ -3,6 +3,7 @@ package com.julianduru.webpush.controller;
 
 import com.julianduru.webpush.NotificationConstant;
 import com.julianduru.webpush.send.api.PushNotification;
+import com.julianduru.webpush.send.api.UserIdNotificationToken;
 import com.julianduru.webpush.send.sse.Emitters;
 import com.julianduru.webpush.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,7 @@ public class PushNotificationController {
 
 
     @GetMapping("/token")
-    public String getNotificationSubscriptionToken(@AuthenticationPrincipal Principal principal) {
+    public UserIdNotificationToken getNotificationSubscriptionToken(@AuthenticationPrincipal Principal principal) {
         if (principal == null) {
             throw new IllegalArgumentException("Unable to determine Authenticated User");
         }
