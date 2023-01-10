@@ -12,15 +12,23 @@ jobs:
     if: github.event.pull_request.merged == true
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Java 14 env
+      - name: Setup Java 17 env
         uses: actions/setup-java@v1
         with:
-          java-version: 14
+          java-version: 17
+
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify -s settings.xml -f pom.xml
+
       - name: Set Commit Message
         id: commit
         run: |
           ${{ startsWith(github.head_ref, 'feature/') }} && echo ::set-output name=message::"+semver: feature" \
           || echo ::set-output name=message::"+semver: patch"
+
       - name: Upgrading Version
         env:
           COMMIT_MSG: ${{ steps.commit.outputs.message }}
@@ -29,6 +37,7 @@ jobs:
           git config user.name ${{ secrets.GIT_USERNAME }}
           git add .
           git commit -m "$COMMIT_MSG" --allow-empty || true
+
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
@@ -36,27 +45,24 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
 
+  merge-main:
+    name: Merge to Main
+    needs: [ build ]
+    runs-on: ubuntu-latest
 
-#  merge-master:
-#    name: Merge to Master
-#    needs: [build]
-#    runs-on: ubuntu-latest
-#
-#    if: github.event.pull_request.merged == true
-#    steps:
-#    - name: Checkout
-#      uses: actions/checkout@v2
-#    - name: Fetching
-#      run: |
-#        git fetch --all
-#    - name: Merge to Master
-#      uses: devmasx/merge-branch@v1.1.0
-#      with:
-#        type: now
-#        target_branch: 'master'
-#      env:
-#        GITHUB_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
-        
-        
-        
-        
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Fetching
+        run: |
+          git fetch --all
+
+      - name: Merge to Main
+        uses: devmasx/merge-branch@v1.1.0
+        with:
+          type: now
+          target_branch: 'main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
+
