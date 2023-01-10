@@ -47,12 +47,15 @@ public class SseEmitters implements Emitters {
             .map(
                 sink -> {
                     try {
+                        if (sink.currentSubscriberCount() < 1) {
+                            throw new IllegalStateException("No subscribers on sink. To be scheduled for removal");
+                        }
                         sink.tryEmitNext(JSONUtil.asJsonString(obj));
                         return OperationStatus.success("Sent Server Event");
                     } catch (Exception e) {
                         log.error("Unable to complete emitter Send", e);
                         sink.tryEmitError(e);
-                        //TODO: remove dead emitter from list..
+                        // TODO: remove dead emitter from list...
                         return OperationStatus.failure(e.getMessage());
                     }
                 }
