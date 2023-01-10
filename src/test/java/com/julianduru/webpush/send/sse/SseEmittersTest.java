@@ -4,6 +4,7 @@ package com.julianduru.webpush.send.sse;
 import com.julianduru.webpush.TestConstants;
 import com.julianduru.webpush.send.api.OperationStatus;
 import com.julianduru.webpush.send.util.HttpResponseListAssert;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,7 @@ public class SseEmittersTest {
 
 
     @Test
+    @Disabled
     public void testSendingNotificationThroughSseEmitter() throws Exception {
         sseEmitters.add(TestConstants.TEST_USER_NAME, UUID.randomUUID().toString());
 

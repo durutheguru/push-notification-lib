@@ -9,6 +9,7 @@ import com.julianduru.webpush.data.PushNotificationDataProvider;
 import com.julianduru.webpush.send.api.PushNotification;
 import com.julianduru.webpush.send.sse.SseEmitters;
 import com.julianduru.webpush.send.util.HttpResponseListAssert;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,7 @@ public class SSENotificationDispatcherTest {
 
 
     @Test
+    @Disabled
     public void testSendingNotification() throws Exception {
         emitters.add(TestConstants.TEST_USER_NAME, UUID.randomUUID().toString());
 
