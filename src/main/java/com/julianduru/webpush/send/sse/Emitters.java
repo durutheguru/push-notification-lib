@@ -2,8 +2,9 @@ package com.julianduru.webpush.send.sse;
 
 
 import com.julianduru.webpush.exception.ServerSentEventException;
-import org.apache.http.HttpResponse;
+import com.julianduru.webpush.send.api.OperationStatus;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 import java.util.Map;
@@ -14,16 +15,17 @@ import java.util.Map;
 public interface Emitters {
 
 
-    Map<String, List<SseEmitter>> getEmitterMap();
+    Map<String, UserIDEmittersContainer> getEmitterMap();
 
 
-    SseEmitter add(SseEmitter emitter) throws IllegalStateException;
+    Flux<Object> add(String userId, String token) throws IllegalStateException;
 
 
-    List<HttpResponse> send(String authUserId, Object obj);
+    List<OperationStatus<String>> send(String authUserId, Object obj);
 
 
-    List<HttpResponse> send(Object obj) throws ServerSentEventException;
+    List<OperationStatus<String>> send(Object obj) throws ServerSentEventException;
 
 
 }
+

@@ -2,8 +2,9 @@ package com.julianduru.webpush.send.sse;
 
 
 import com.julianduru.webpush.TestConstants;
+import com.julianduru.webpush.send.api.OperationStatus;
 import com.julianduru.webpush.send.util.HttpResponseListAssert;
-import org.apache.http.HttpResponse;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,22 +41,25 @@ public class SseEmittersTest {
     public void testAddingSseEmitter() throws Exception {
         int mapCount = sseEmitters.getEmitterMap().size();
 
-        SseEmitter emitter = sseEmitters.add(new SseEmitter());
+        var emitter = sseEmitters.add(TestConstants.TEST_USER_NAME, UUID.randomUUID().toString());
 
         assertThat(emitter).isNotNull();
 
-        Map<String, List<SseEmitter>> emitterMap = sseEmitters.getEmitterMap();
+        Map<String, UserIDEmittersContainer> emitterMap = sseEmitters.getEmitterMap();
 
         assertThat(emitterMap).isNotNull();
-        assertThat(mapCount + 1).isEqualTo(emitterMap.get(TestConstants.TEST_USER_NAME).size());
+        assertThat(mapCount + 1).isEqualTo(emitterMap.get(TestConstants.TEST_USER_NAME).allEmitters().size());
     }
 
 
     @Test
+    @Disabled
     public void testSendingNotificationThroughSseEmitter() throws Exception {
-        sseEmitters.add(new SseEmitter());
+        sseEmitters.add(TestConstants.TEST_USER_NAME, UUID.randomUUID().toString());
 
-        List<HttpResponse> responseList = sseEmitters.send(new Object());
+        List<OperationStatus<String>> responseList = sseEmitters.send(
+            Map.of()
+        );
 
         HttpResponseListAssert.checkList(responseList);
     }

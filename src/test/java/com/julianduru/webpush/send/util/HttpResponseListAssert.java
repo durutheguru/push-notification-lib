@@ -1,11 +1,12 @@
 package com.julianduru.webpush.send.util;
 
 
-import org.apache.http.HttpResponse;
+import com.julianduru.webpush.send.api.OperationStatus;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * created by julian
@@ -13,11 +14,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HttpResponseListAssert {
 
 
-    public static void checkList(List<HttpResponse> responseList) {
+    public static void checkList(List<OperationStatus<String>> responseList) {
         assertThat(responseList).isNotEmpty();
 
-        for (HttpResponse response : responseList) {
-            assertThat(response.getStatusLine().getStatusCode()).isEqualTo(201);
+        for (var response : responseList) {
+            assertTrue(response.is(OperationStatus.Value.SUCCESS));
         }
     }
 

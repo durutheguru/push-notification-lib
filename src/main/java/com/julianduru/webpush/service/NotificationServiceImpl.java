@@ -1,15 +1,21 @@
 package com.julianduru.webpush.service;
 
 
-import com.julianduru.util.MapperUtil;
-import com.julianduru.util.TimeUtil;
-import com.julianduru.util.stream.PullStreamDataRequest;
-import com.julianduru.webpush.api.dto.NotificationDTO;
-import com.julianduru.webpush.entity.Notification;
-import com.julianduru.webpush.rest.NotificationRepository;
+import com.julianduru.webpush.send.PushNotificationRepository;
+import com.julianduru.webpush.send.api.PushNotification;
+import com.julianduru.webpush.send.api.UserIdNotificationToken;
+import com.julianduru.webpush.send.sse.Emitters;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import reactor.core.publisher.Flux;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * created by julian
@@ -19,44 +25,66 @@ import org.springframework.stereotype.Service;
 public class NotificationServiceImpl implements NotificationService {
 
 
-    private final NotificationRepository notificationRepository;
+    @Value("${code.config.notifications.token.expiry-in-seconds:86400}")
+    private Long notificationTokenExpiryIntervalInSeconds;
+
+
+    @Value("${spring.mvc.async.request-timeout}")
+    private Long sseTimeout;
+
+
+    private final Emitters sseEmitters;
+
+
+    private final PushNotificationRepository notificationRepository;
+
+
+    private final NotificationTokenRepository notificationTokenRepository;
 
 
     @Override
-    public Page<NotificationDTO> fetchNotifications(String userId, PullStreamDataRequest dataRequest) {
-        Page<Notification> notifications;
-        if (dataRequest.hasAllTimeStamps()) {
-            notifications = notificationRepository.findByUserIdAndTimeAddedBetween(
-                userId,
-                TimeUtil.zdtFromTimeStamp(dataRequest.getAfterTimeStamp()),
-                TimeUtil.zdtFromTimeStamp(dataRequest.getBeforeTimeStamp()),
-                dataRequest.getPageable()
-            );
+    public Page<PushNotification> fetchNotifications(String userId, Pageable pageable) {
+        return notificationRepository.fetchNotifications(userId, pageable);
+    }
+
+
+    @Override
+    public UserIdNotificationToken generateToken(String userId) {
+        var token = String.format(
+            "%s-%d-%s",
+            UUID.randomUUID(),
+            System.currentTimeMillis(),
+            UUID.randomUUID()
+        );
+
+        var uidToken = UserIdNotificationToken.builder()
+            .userId(userId)
+            .token(token)
+            .expiresOn(
+                LocalDateTime.now().plusSeconds(
+                    notificationTokenExpiryIntervalInSeconds
+                )
+            )
+            .build();
+
+        notificationTokenRepository.saveUserSubscriptionToken(uidToken);
+        return uidToken;
+    }
+
+
+    @Override
+    public Flux<Object> handleNotificationSubscription(String tokenString) throws IOException {
+        var tokenOptional = notificationTokenRepository.getUserIdWithToken(tokenString);
+        if (tokenOptional.isEmpty()) {
+            throw new SecurityException("Unable to process notification subscription. Invalid token");
         }
 
-        else if (dataRequest.hasAfterTimeStamp()) {
-            notifications = notificationRepository.findByUserIdAndTimeAddedAfter(
-                userId,
-                TimeUtil.zdtFromTimeStamp(dataRequest.getAfterTimeStamp()),
-                dataRequest.getPageable()
-            );
+        var token = tokenOptional.get();
+        if (token.getExpiresOn().isBefore(LocalDateTime.now())) {
+            throw new SecurityException("Token has expired");
         }
 
-        else if (dataRequest.hasBeforeTimeStamp()) {
-            notifications = notificationRepository.findByUserIdAndTimeAddedBefore(
-                userId,
-                TimeUtil.zdtFromTimeStamp(dataRequest.getBeforeTimeStamp()),
-                dataRequest.getPageable()
-            );
-        }
-
-        else {
-            notifications = notificationRepository.findByUserId(
-                userId, dataRequest.getPageable()
-            );
-        }
-
-        return MapperUtil.map(notifications, NotificationDTO.class);
+        return sseEmitters.add(token.getUserId(), token.getToken());
     }
 
 
