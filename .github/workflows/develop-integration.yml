@@ -46,7 +46,7 @@ jobs:
 
 
   merge-main:
-    name: Merge to Main
+    name: Merge to Master
     needs: [ build ]
     runs-on: ubuntu-latest
 
@@ -58,11 +58,12 @@ jobs:
         run: |
           git fetch --all
 
-      - name: Merge to Main
+      - name: Merge to Master
         uses: devmasx/merge-branch@v1.1.0
         with:
           type: now
-          target_branch: 'main'
+          target_branch: 'master'
         env:
-          GITHUB_TOKEN: ${{ secrets.GIT_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
