@@ -1,21 +1,17 @@
 package com.julianduru.webpush.send.impl;
 
 
-import com.julianduru.webpush.entity.Notification;
 import com.julianduru.webpush.send.NotificationDispatcher;
+import com.julianduru.webpush.send.api.OperationStatus;
+import com.julianduru.webpush.send.api.PushNotification;
 import com.julianduru.webpush.send.sse.Emitters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
 import java.util.List;
-import java.util.concurrent.Future;
+import java.util.Map;
 
 /**
  * created by julian
@@ -26,9 +22,6 @@ import java.util.concurrent.Future;
 public class SSENotificationDispatcher implements NotificationDispatcher {
 
 
-    private static final String NOTIFICATION_EVENT_TYPE = "notification";
-
-
     @Value("${code.config.server-sent-event.retry-timeout-millis}")
     private Long retryInterval;
 
@@ -36,21 +29,19 @@ public class SSENotificationDispatcher implements NotificationDispatcher {
     private final Emitters sseEmitters;
 
 
-    @Async
     @Override
-    public Future<List<HttpResponse>> sendNotification(Notification notification) {
-        List<HttpResponse> responseList = sseEmitters.send(
+    public List<OperationStatus<String>> sendNotification(PushNotification notification) {
+        return sseEmitters.send(
             notification.getUserId(),
-
-            ServerSentEvent.<Notification>builder()
-                .id(notification.getId().toString())
-                .event(NOTIFICATION_EVENT_TYPE)
-                .retry(Duration.ofMillis(retryInterval))
-                .data(notification).build()
+            Map.of(
+                "uuid", notification.getUuid(),
+                "event", notification.getType(),
+                "data", notification.getMessage()
+            )
         );
-
-        return new AsyncResult<>(responseList);
     }
 
 
 }
+
+

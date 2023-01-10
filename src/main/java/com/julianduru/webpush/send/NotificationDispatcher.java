@@ -1,14 +1,10 @@
 package com.julianduru.webpush.send;
 
 
-import com.julianduru.webpush.entity.Notification;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpVersion;
-import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.message.BasicStatusLine;
+import com.julianduru.webpush.send.api.OperationStatus;
+import com.julianduru.webpush.send.api.PushNotification;
 
-import java.util.*;
-import java.util.concurrent.Future;
+import java.util.List;
 
 /**
  * created by julian
@@ -16,18 +12,8 @@ import java.util.concurrent.Future;
 public interface NotificationDispatcher {
 
 
-    Future<List<HttpResponse>> sendNotification(Notification notification) ;
-
-
-
-    static HttpResponse defaultSuccessNotifResponse(String message) {
-        return new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1, 1), 201, message));
-    }
-
-
-    static HttpResponse defaultFailedNotifResponse(String message) {
-        return new BasicHttpResponse(new BasicStatusLine(new HttpVersion(1, 1), 405, message));
-    }
+    List<OperationStatus<String>> sendNotification(PushNotification notification) ;
 
 
 }
+
