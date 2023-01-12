@@ -4,19 +4,18 @@ package com.julianduru.webpush.controller;
 import com.julianduru.webpush.NotificationConstant;
 import com.julianduru.webpush.send.api.PushNotification;
 import com.julianduru.webpush.send.api.UserIdNotificationToken;
-import com.julianduru.webpush.send.sse.Emitters;
 import com.julianduru.webpush.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
 import java.io.IOException;
@@ -78,4 +77,5 @@ public class PushNotificationController {
 
 
 }
+
 

@@ -4,16 +4,11 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
-import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * created by julian on 01/12/2022
