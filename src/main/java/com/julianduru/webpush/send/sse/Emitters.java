@@ -2,7 +2,9 @@ package com.julianduru.webpush.send.sse;
 
 
 import com.julianduru.webpush.exception.ServerSentEventException;
+import com.julianduru.webpush.send.api.Message;
 import com.julianduru.webpush.send.api.OperationStatus;
+import com.julianduru.webpush.send.sse.UserIDEmittersContainer;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import reactor.core.publisher.Flux;
 
@@ -18,7 +20,7 @@ public interface Emitters {
     Map<String, UserIDEmittersContainer> getEmitterMap();
 
 
-    Flux<Object> add(String userId, String token) throws IllegalStateException;
+    Flux<Message<?>> add(String userId, String token) throws IllegalStateException;
 
 
     List<OperationStatus<String>> send(String authUserId, Object obj);

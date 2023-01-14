@@ -7,6 +7,7 @@ import com.julianduru.webpush.TestConstants;
 import com.julianduru.webpush.config.TestConfig;
 import com.julianduru.webpush.data.PushNotificationDataProvider;
 import com.julianduru.webpush.send.api.PushNotification;
+import com.julianduru.webpush.send.sse.SSENotificationDispatcher;
 import com.julianduru.webpush.send.sse.SseEmitters;
 import com.julianduru.webpush.send.util.HttpResponseListAssert;
 import org.junit.jupiter.api.Disabled;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.UUID;
 

@@ -1,5 +1,6 @@
 package com.julianduru.webpush.send.sse;
 
+import com.julianduru.webpush.send.api.Message;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.LinkedMultiValueMap;
@@ -20,7 +21,8 @@ public class UserIDEmittersContainer {
     static Long sseTimeout = 18000000L;
 
 
-    private MultiValueMap<String, Sinks.Many<Object>> tokenEmitterMap;
+    // mapping of token to sinks
+    private MultiValueMap<String, Sinks.Many<Message<?>>> tokenEmitterMap;
 
 
     public UserIDEmittersContainer() {
@@ -28,21 +30,31 @@ public class UserIDEmittersContainer {
     }
 
 
-    public Flux<Object> add(String token) {
-        var sink = Sinks.many().multicast()
+    public Flux<Message<?>> add(String token) {
+        Sinks.Many<Message<?>> sink = Sinks.many().multicast()
             .onBackpressureBuffer();
 
         tokenEmitterMap.add(token, sink);
 
-        sink.tryEmitNext("Connection Established..");
-        sink.tryEmitNext("Waiting for Events..");
+        sink.tryEmitNext(
+            Message.builder()
+                .messageType(Message.Type.STRING)
+                .data("Connection Established..")
+                .build()
+        );
+        sink.tryEmitNext(
+            Message.builder()
+                .messageType(Message.Type.STRING)
+                .data("Waiting for Events..")
+                .build()
+        );
 
         return sink.asFlux();
     }
 
 
-    public List<Sinks.Many<Object>> allEmitters() {
-        var list = new ArrayList<Sinks.Many<Object>>();
+    public List<Sinks.Many<Message<?>>> allEmitters() {
+        var list = new ArrayList<Sinks.Many<Message<?>>>();
         tokenEmitterMap.values().forEach(pair -> list.addAll(pair.stream().toList()));
         return list;
     }

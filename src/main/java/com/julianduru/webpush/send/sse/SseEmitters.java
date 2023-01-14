@@ -5,13 +5,11 @@ import com.julianduru.security.Auth;
 import com.julianduru.security.entity.UserAuthId;
 import com.julianduru.util.JSONUtil;
 import com.julianduru.webpush.exception.ServerSentEventException;
+import com.julianduru.webpush.send.api.Message;
 import com.julianduru.webpush.send.api.OperationStatus;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Sinks;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +31,7 @@ public class SseEmitters implements Emitters {
     }
 
 
-    public Flux<Object> add(String userId, String token) throws IllegalStateException {
+    public Flux<Message<?>> add(String userId, String token) throws IllegalStateException {
         return addMapping(userId, token);
     }
 
@@ -50,7 +48,12 @@ public class SseEmitters implements Emitters {
                         if (sink.currentSubscriberCount() < 1) {
                             throw new IllegalStateException("No subscribers on sink. To be scheduled for removal");
                         }
-                        sink.tryEmitNext(JSONUtil.asJsonString(obj));
+                        sink.tryEmitNext(
+                            Message.builder()
+                                .messageType(Message.Type.STRING)
+                                .data(JSONUtil.asJsonString(obj))
+                                .build()
+                        );
                         return OperationStatus.success("Sent Server Event");
                     } catch (Exception e) {
                         log.error("Unable to complete emitter Send", e);
@@ -75,7 +78,7 @@ public class SseEmitters implements Emitters {
     }
 
 
-    private Flux<Object> addMapping(String authUserId, String token) {
+    private Flux<Message<?>> addMapping(String authUserId, String token) {
         if (!sseEmitterMap.containsKey(authUserId)) {
             this.sseEmitterMap.put(authUserId, new UserIDEmittersContainer());
         }

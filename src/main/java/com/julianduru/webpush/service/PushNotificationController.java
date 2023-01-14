@@ -1,4 +1,4 @@
-package com.julianduru.webpush.controller;
+package com.julianduru.webpush.service;
 
 
 import com.julianduru.webpush.NotificationConstant;

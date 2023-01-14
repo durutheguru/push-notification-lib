@@ -10,12 +10,12 @@ import org.springframework.stereotype.Controller;
 /**
  * created by julian on 10/01/2023
  */
-@Controller
+//@Controller
 public class WSController {
 
 
-    @MessageMapping("/fetch")
-    @SendTo("/topic/notifications")
+//    @MessageMapping("/fetch")
+//    @SendTo("/topic/notifications")
     public PushNotification fetch(UserIdNotificationToken message) {
         var faker = new Faker();
 

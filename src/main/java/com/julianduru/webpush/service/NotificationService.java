@@ -1,6 +1,7 @@
 package com.julianduru.webpush.service;
 
 
+import com.julianduru.webpush.send.api.Message;
 import com.julianduru.webpush.send.api.PushNotification;
 import com.julianduru.webpush.send.api.UserIdNotificationToken;
 import org.springframework.data.domain.Page;
@@ -20,7 +21,7 @@ public interface NotificationService {
 
     UserIdNotificationToken generateToken(String userId);
 
-    Flux<Object> handleNotificationSubscription(String token) throws IOException;
+    Flux<Message<?>> handleNotificationSubscription(String token) throws IOException;
 
 
 }

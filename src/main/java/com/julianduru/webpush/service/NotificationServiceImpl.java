@@ -2,6 +2,7 @@ package com.julianduru.webpush.service;
 
 
 import com.julianduru.webpush.send.PushNotificationRepository;
+import com.julianduru.webpush.send.api.Message;
 import com.julianduru.webpush.send.api.PushNotification;
 import com.julianduru.webpush.send.api.UserIdNotificationToken;
 import com.julianduru.webpush.send.sse.Emitters;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import reactor.core.publisher.Flux;
 
 import java.io.IOException;
@@ -73,7 +73,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 
     @Override
-    public Flux<Object> handleNotificationSubscription(String tokenString) throws IOException {
+    public Flux<Message<?>> handleNotificationSubscription(String tokenString) throws IOException {
         var tokenOptional = notificationTokenRepository.getUserIdWithToken(tokenString);
         if (tokenOptional.isEmpty()) {
             throw new SecurityException("Unable to process notification subscription. Invalid token");

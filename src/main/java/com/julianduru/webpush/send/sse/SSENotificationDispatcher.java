@@ -1,4 +1,4 @@
-package com.julianduru.webpush.send.impl;
+package com.julianduru.webpush.send.sse;
 
 
 import com.julianduru.webpush.send.NotificationDispatcher;

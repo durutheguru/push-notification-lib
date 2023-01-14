@@ -1,16 +1,17 @@
-package com.julianduru.webpush.send.impl;
+package com.julianduru.webpush.send;
 
 
 import com.julianduru.webpush.send.NotificationDispatchGateway;
 import com.julianduru.webpush.send.PushNotificationRepository;
 import com.julianduru.webpush.send.api.OperationStatus;
 import com.julianduru.webpush.send.api.PushNotification;
+import com.julianduru.webpush.send.sse.SSENotificationDispatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * created by julian
@@ -24,19 +25,17 @@ public class NotificationDispatchGatewayImpl implements NotificationDispatchGate
     private final PushNotificationRepository notificationRepository;
 
 
-    private final SSENotificationDispatcher notificationDispatcher;
+    private final List<NotificationDispatcher> notificationDispatchers;
 
 
 
     public void dispatch(List<PushNotification> notifications) {
-        sendNotificationsToDispatcher(notifications);
-    }
-
-
-    private void sendNotificationsToDispatcher(List<PushNotification> notifications) {
         for (var notification : notifications) {
             try {
-                var responseList = notificationDispatcher.sendNotification(notification);
+                var responseList = notificationDispatchers.stream()
+                    .map(d -> d.sendNotification(notification))
+                    .flatMap(Collection::stream)
+                    .toList();
 
                 var successfulCount = responseList.stream()
                     .filter(r -> r.is(OperationStatus.Value.SUCCESS))
@@ -50,6 +49,9 @@ public class NotificationDispatchGatewayImpl implements NotificationDispatchGate
             }
         }
     }
+
+
+
 
 
 }
