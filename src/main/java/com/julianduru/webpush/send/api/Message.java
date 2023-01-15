@@ -17,7 +17,7 @@ public class Message<T> {
 
     public enum Type {
 
-        BYTES, STRING,
+        BINARY, TEXT,
 
     }
 

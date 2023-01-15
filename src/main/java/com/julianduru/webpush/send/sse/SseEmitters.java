@@ -38,6 +38,11 @@ public class SseEmitters implements Emitters {
 
     public List<OperationStatus<String>> send(String authUserId, Object obj) {
         var emittersContainer = sseEmitterMap.get(authUserId);
+        if (emittersContainer == null) {
+            log.info("No Emitters for userId {}", authUserId);
+            return List.of(OperationStatus.failure());
+        }
+
         var sinkList = emittersContainer.allEmitters();
 
         return sinkList
@@ -50,7 +55,7 @@ public class SseEmitters implements Emitters {
                         }
                         sink.tryEmitNext(
                             Message.builder()
-                                .messageType(Message.Type.STRING)
+                                .messageType(Message.Type.TEXT)
                                 .data(JSONUtil.asJsonString(obj))
                                 .build()
                         );

@@ -2,9 +2,10 @@ package com.julianduru.webpush.service;
 
 
 import com.julianduru.webpush.send.PushNotificationRepository;
+import com.julianduru.webpush.send.UserIdToken;
+import com.julianduru.webpush.send.UserIdTokenRepository;
 import com.julianduru.webpush.send.api.Message;
 import com.julianduru.webpush.send.api.PushNotification;
-import com.julianduru.webpush.send.api.UserIdNotificationToken;
 import com.julianduru.webpush.send.sse.Emitters;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -39,7 +41,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final PushNotificationRepository notificationRepository;
 
 
-    private final NotificationTokenRepository notificationTokenRepository;
+    private final UserIdTokenRepository userIdTokenRepository;
 
 
     @Override
@@ -49,7 +51,7 @@ public class NotificationServiceImpl implements NotificationService {
 
 
     @Override
-    public UserIdNotificationToken generateToken(String userId) {
+    public UserIdToken generateToken(String userId) {
         var token = String.format(
             "%s-%d-%s",
             UUID.randomUUID(),
@@ -57,35 +59,40 @@ public class NotificationServiceImpl implements NotificationService {
             UUID.randomUUID()
         );
 
-        var uidToken = UserIdNotificationToken.builder()
-            .userId(userId)
-            .token(token)
-            .expiresOn(
-                LocalDateTime.now().plusSeconds(
-                    notificationTokenExpiryIntervalInSeconds
-                )
+        var uidToken = new UserIdToken(
+            userId, token,
+            LocalDateTime.now().plusSeconds(
+                notificationTokenExpiryIntervalInSeconds
             )
-            .build();
+        );
 
-        notificationTokenRepository.saveUserSubscriptionToken(uidToken);
+        userIdTokenRepository.saveUserNotificationToken(uidToken);
         return uidToken;
     }
 
 
     @Override
-    public Flux<Message<?>> handleNotificationSubscription(String tokenString) throws IOException {
-        var tokenOptional = notificationTokenRepository.getUserIdWithToken(tokenString);
+    public Flux<Message<?>> handleSSENotificationSubscription(String tokenString) throws IOException {
+        var token = fetchValidatedToken(tokenString).get();
+        return sseEmitters.add(token.userId(), token.token());
+    }
+
+
+    public Optional<UserIdToken> fetchValidatedToken(String tokenString) {
+        var tokenOptional = userIdTokenRepository.findByToken(tokenString);
         if (tokenOptional.isEmpty()) {
             throw new SecurityException("Unable to process notification subscription. Invalid token");
         }
 
         var token = tokenOptional.get();
-        if (token.getExpiresOn().isBefore(LocalDateTime.now())) {
-            throw new SecurityException("Token has expired");
+        if (token.expiresOn().isBefore(LocalDateTime.now())) {
+            throw new SecurityException("Token has expired. " + token.token());
         }
 
-        return sseEmitters.add(token.getUserId(), token.getToken());
+        return tokenOptional;
     }
 
 
 }
+
+

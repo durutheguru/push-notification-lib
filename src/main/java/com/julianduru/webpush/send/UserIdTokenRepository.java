@@ -9,6 +9,9 @@ import java.util.Optional;
 public interface UserIdTokenRepository {
 
 
+    void saveUserNotificationToken(UserIdToken notificationToken);
+
+
     Collection<UserIdToken> findByUserId(String userId);
 
 

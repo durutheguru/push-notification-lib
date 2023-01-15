@@ -1,19 +1,18 @@
 package com.julianduru.webpush.send.socket;
 
-import com.julianduru.webpush.send.UserIdTokenRepository;
 import com.julianduru.webpush.send.api.Message;
 import com.julianduru.webpush.send.api.OperationStatus;
 import com.julianduru.webpush.send.sse.UserIDEmittersContainer;
+import com.julianduru.webpush.service.auth.UserAuthenticationSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
-import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -27,7 +26,11 @@ import java.util.stream.Collectors;
 public class WebSocketHandlerImpl implements WebSocketHandler {
 
 
-    private final UserIdTokenRepository userIdTokenRepository;
+    @Value("${code.config.push-notification.user.authentication-source:url}")
+    private String authenticationSourceType;
+
+
+    private final List<UserAuthenticationSource> authenticationSources;
 
 
     // mapping of userId to emitters for userId
@@ -36,51 +39,19 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
-        var webSocketQuery = session.getHandshakeInfo().getUri().getRawQuery();
-        var tokenId = webSocketQuery.split("=")[1];
-        var token = userIdTokenRepository.findByToken(tokenId);
-        if (token.isEmpty()) {
-            return Mono.empty();
-        }
-
-        if (token.get().isExpired()) {
-            log.info("Expired Token {}", tokenId);
-            return Mono.empty();
-        }
-
-        var userId = token.get().userId();
-        var publisher = addMapping(userId, tokenId);
+        var incomingMessageHandler = new IncomingMessageHandler(session);
+        var outgoingMessageHandler = new OutgoingMessageHandler(session);
 
         return session.send(
-            publisher.map(
-                msg -> {
-                    log.debug("Received Message from publisher: {}", msg);
-
-                    switch (msg.getMessageType()) {
-                        case STRING -> {
-                            return session.textMessage(msg.getData().toString());
-                        }
-                        case BYTES -> {
-                            return session.binaryMessage(
-                                dataBufferFactory -> dataBufferFactory.wrap((ByteBuffer) msg.getData())
-                            );
-                        }
-                        default -> {
-                            return session.textMessage("..");
-                        }
-                    }
-                }
-            )
+            getAuthenticationSource()
+                .fetchNotificationToken(session)
+                .flux()
+                .flatMap(token -> addMapping(token.userId(), token.token()))
+                .doOnError(e -> log.error("Unable to authenticate user and create Message Source", e))
+                .map(outgoingMessageHandler::process)
         ).and(
             session.receive()
-                .doOnNext(
-                    message -> {
-                        switch (message.getType()) {
-                            case BINARY -> handleBinaryMessage(session, message);
-                            case TEXT -> handleTextMessage(session, message);
-                        }
-                    }
-                )
+                .doOnNext(incomingMessageHandler::handleMessage)
         );
     }
 
@@ -93,15 +64,6 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
         return this.socketEmitterMap.get(authUserId).add(token);
     }
 
-
-    protected void handleTextMessage(WebSocketSession session, WebSocketMessage message) {
-        log.info("Text Message Received: {}", message);
-    }
-
-
-    protected void handleBinaryMessage(WebSocketSession session, WebSocketMessage message) {
-        log.info("Binary Message Received: {}", message);
-    }
 
 
     public List<OperationStatus<String>> send(String userId, Message<?> msg) {
@@ -139,6 +101,18 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
     }
 
 
-}
+    private UserAuthenticationSource getAuthenticationSource() {
+        return authenticationSources
+            .stream()
+            .filter(
+                source -> source.supports(authenticationSourceType)
+            )
+            .findFirst()
+            .orElseThrow(
+                () -> new IllegalArgumentException("No Authentication Source found for type " + authenticationSourceType)
+            );
+    }
 
+
+}
 

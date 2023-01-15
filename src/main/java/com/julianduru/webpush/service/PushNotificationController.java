@@ -2,9 +2,8 @@ package com.julianduru.webpush.service;
 
 
 import com.julianduru.webpush.NotificationConstant;
+import com.julianduru.webpush.send.UserIdToken;
 import com.julianduru.webpush.send.api.PushNotification;
-import com.julianduru.webpush.send.api.UserIdNotificationToken;
-import com.julianduru.webpush.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -47,7 +46,7 @@ public class PushNotificationController {
 
 
     @GetMapping("/token")
-    public UserIdNotificationToken getNotificationSubscriptionToken(@AuthenticationPrincipal Principal principal) {
+    public UserIdToken getNotificationSubscriptionToken(@AuthenticationPrincipal Principal principal) {
         if (principal == null) {
             throw new IllegalArgumentException("Unable to determine Authenticated User");
         }
@@ -62,7 +61,7 @@ public class PushNotificationController {
     ) throws IOException {
         response.getHeaders().add("Cache-Control", "no-store");
         response.getHeaders().add("Connection", "keep-alive");
-        var subscription = notificationService.handleNotificationSubscription(token);
+        var subscription = notificationService.handleSSENotificationSubscription(token);
 
         return Flux.merge(
             // single instance hot flux

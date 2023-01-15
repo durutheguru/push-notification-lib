@@ -1,10 +1,10 @@
 package com.julianduru.webpush.send.impl;
 
-import com.julianduru.webpush.send.api.UserIdNotificationToken;
-import com.julianduru.webpush.service.NotificationTokenRepository;
+import com.julianduru.webpush.send.UserIdToken;
+import com.julianduru.webpush.send.UserIdTokenRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -13,19 +13,20 @@ import java.util.Optional;
  * created by julian on 01/12/2022
  */
 @Component
-public class NotificationTokenRepositoryImpl implements NotificationTokenRepository {
+public class NotificationTokenRepositoryImpl implements UserIdTokenRepository {
 
-    private final Map<String, UserIdNotificationToken> tokenUIDMap = new HashMap<>();
+
+    private final Map<String, UserIdToken> tokenUIDMap = new HashMap<>();
 
 
     @Override
-    public void saveUserSubscriptionToken(UserIdNotificationToken notificationToken) {
-        tokenUIDMap.put(notificationToken.getToken(), notificationToken);
+    public void saveUserNotificationToken(UserIdToken notificationToken) {
+        tokenUIDMap.put(notificationToken.token(), notificationToken);
     }
 
 
     @Override
-    public Optional<UserIdNotificationToken> getUserIdWithToken(String token) {
+    public Optional<UserIdToken> findByToken(String token) {
         var value = tokenUIDMap.get(token);
         if (value != null) {
             return Optional.of(value);
@@ -36,5 +37,12 @@ public class NotificationTokenRepositoryImpl implements NotificationTokenReposit
     }
 
 
+    @Override
+    public Collection<UserIdToken> findByUserId(String userId) {
+        return null;
+    }
+
+
 }
+
 

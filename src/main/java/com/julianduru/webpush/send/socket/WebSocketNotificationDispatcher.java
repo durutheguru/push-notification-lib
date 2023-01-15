@@ -26,7 +26,7 @@ public class WebSocketNotificationDispatcher implements NotificationDispatcher {
         return webSocketHandler.send(
             notification.getUserId(),
             Message.builder()
-                .messageType(Message.Type.STRING)
+                .messageType(Message.Type.TEXT)
                 .data(JSONUtil.asJsonString(notification, ""))
                 .build()
         );

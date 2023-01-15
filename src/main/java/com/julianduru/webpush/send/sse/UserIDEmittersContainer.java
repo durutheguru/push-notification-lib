@@ -38,13 +38,13 @@ public class UserIDEmittersContainer {
 
         sink.tryEmitNext(
             Message.builder()
-                .messageType(Message.Type.STRING)
+                .messageType(Message.Type.TEXT)
                 .data("Connection Established..")
                 .build()
         );
         sink.tryEmitNext(
             Message.builder()
-                .messageType(Message.Type.STRING)
+                .messageType(Message.Type.TEXT)
                 .data("Waiting for Events..")
                 .build()
         );
