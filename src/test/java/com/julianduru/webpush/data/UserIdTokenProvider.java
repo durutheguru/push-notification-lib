@@ -37,4 +37,15 @@ public class UserIdTokenProvider implements DataProvider<UserIdToken> {
     }
 
 
+    public UserIdToken save(LocalDateTime expiresOn) {
+        var token = new UserIdToken(
+            faker.code().isbn10(),
+            faker.code().isbn10(),
+            expiresOn
+        );
+        tokenRepository.saveUserNotificationToken(token);
+        return token;
+    }
+
+
 }

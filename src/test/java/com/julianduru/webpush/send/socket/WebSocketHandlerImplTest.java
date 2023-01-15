@@ -1,10 +1,8 @@
 package com.julianduru.webpush.send.socket;
 
 import com.github.javafaker.Faker;
-import com.julianduru.webpush.BaseServiceIntegrationTest;
 import com.julianduru.webpush.TestNotificationAutoConfiguration;
 import com.julianduru.webpush.data.UserIdTokenProvider;
-import com.julianduru.webpush.send.UserIdToken;
 import com.julianduru.webpush.send.UserIdTokenRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,6 +50,7 @@ public class WebSocketHandlerImplTest {
     private WebSocketClient webSocketClient = new ReactorNettyWebSocketClient();
 
 
+
     @Test
     public void handlingSocketConnectionRequest() throws Exception {
         var token = userIdTokenProvider.save();
@@ -89,6 +88,42 @@ public class WebSocketHandlerImplTest {
                 "Connection Established..",
                 "Waiting for Events.."
             );
+    }
+
+
+    @Test
+    public void handlingSocketConnectionRequestForExpiredToken() throws Exception {
+        var token = userIdTokenProvider.save(LocalDateTime.now().minusDays(2));
+        var counter = new AtomicLong();
+        final var incomingMessageList = new ArrayList<>();
+
+        webSocketClient
+            .execute(
+                URI.create(String.format("ws://localhost:11111/ws/connect?token=%s", token.token())),
+                (session) -> {
+                    var out = Mono.just(
+                        session.textMessage("test message from client")
+                    );
+
+                    var in = session.receive()
+                        .map(WebSocketMessage::getPayloadAsText);
+
+                    return session
+                        .send(out)
+                        .thenMany(in)
+                        .doOnNext(str -> {
+                            counter.incrementAndGet();
+                            incomingMessageList.add(str);
+                        })
+                        .then();
+                }
+            )
+            .subscribe();
+
+//        await().atMost(Duration.ofSeconds(1));
+        Thread.sleep(1000L);
+
+        assertThat(counter.get()).isEqualTo(0);
     }
 
 
