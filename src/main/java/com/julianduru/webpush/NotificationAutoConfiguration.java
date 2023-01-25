@@ -39,31 +39,4 @@ import java.util.Map;
 public class NotificationAutoConfiguration {
 
 
-    private final KafkaProperties kafkaProperties;
-
-
-
-    public Map<String, Object> consumerConfigs() {
-        var props = kafkaProperties.buildConsumerProperties();
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        return props;
-    }
-
-
-    public ConsumerFactory<String, Object> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerConfigs());
-    }
-
-
-    @Bean
-    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, Object>>
-        kafkaUserNotificationsListenerContainerFactory() {
-        var factory = new ConcurrentKafkaListenerContainerFactory<String, Object>();
-        factory.setConsumerFactory(consumerFactory());
-        return factory;
-    }
-
-
-
 }

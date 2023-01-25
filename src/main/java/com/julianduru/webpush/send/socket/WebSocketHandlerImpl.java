@@ -7,6 +7,7 @@ import com.julianduru.webpush.service.auth.UserAuthenticationSource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
@@ -33,13 +34,17 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
     private final List<UserAuthenticationSource> authenticationSources;
 
 
+    private final KafkaMessageCommandWriter writer;
+
+
     // mapping of userId to emitters for userId
     private final ConcurrentHashMap<String, UserIDEmittersContainer> socketEmitterMap = new ConcurrentHashMap<>();
 
 
+
     @Override
     public Mono<Void> handle(WebSocketSession session) {
-        var incomingMessageHandler = new IncomingMessageHandler(session);
+        var incomingMessageHandler = new IncomingMessageHandler(session, writer);
         var outgoingMessageHandler = new OutgoingMessageHandler(session);
 
         return session.send(
@@ -63,7 +68,6 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
 
         return this.socketEmitterMap.get(authUserId).add(token);
     }
-
 
 
     public List<OperationStatus<String>> send(String userId, Message<?> msg) {

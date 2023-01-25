@@ -3,6 +3,7 @@ package com.julianduru.webpush.send.socket;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
@@ -18,6 +19,9 @@ public class IncomingMessageHandler {
     private final WebSocketSession session;
 
 
+    private final KafkaMessageCommandWriter writer;
+
+
     public void handleMessage(WebSocketMessage message) {
         switch (message.getType()) {
             case BINARY -> handleBinaryMessage(session, message);
@@ -28,6 +32,7 @@ public class IncomingMessageHandler {
 
     private void handleTextMessage(WebSocketSession session, WebSocketMessage message) {
         log.info("Text Message Received: {}", message);
+        writer.sendMessage(message.getPayloadAsText());
     }
 
 

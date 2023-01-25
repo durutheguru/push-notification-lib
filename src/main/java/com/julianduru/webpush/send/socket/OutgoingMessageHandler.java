@@ -1,5 +1,7 @@
 package com.julianduru.webpush.send.socket;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.julianduru.util.JSONUtil;
 import com.julianduru.webpush.send.api.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,8 @@ import java.nio.ByteBuffer;
 @RequiredArgsConstructor
 public class OutgoingMessageHandler {
 
+    private static final String EMPTY = "";
+
 
     private final WebSocketSession session;
 
@@ -22,18 +26,24 @@ public class OutgoingMessageHandler {
     public WebSocketMessage process(Message<?> msg) {
         log.debug("Received Message from publisher: {}", msg);
 
-        switch (msg.getMessageType()) {
-            case TEXT -> {
-                return session.textMessage(msg.getData().toString());
+        try {
+            switch (msg.getMessageType()) {
+                case TEXT -> {
+                    return session.textMessage(JSONUtil.asJsonString(msg.getData()));
+                }
+                case BINARY -> {
+                    return session.binaryMessage(
+                        dataBufferFactory -> dataBufferFactory.wrap((ByteBuffer) msg.getData())
+                    );
+                }
+                default -> {
+                    return session.textMessage(EMPTY);
+                }
             }
-            case BINARY -> {
-                return session.binaryMessage(
-                    dataBufferFactory -> dataBufferFactory.wrap((ByteBuffer) msg.getData())
-                );
-            }
-            default -> {
-                return session.textMessage("..");
-            }
+        }
+        catch (JsonProcessingException e) {
+            log.error("Error while processing Message: {}", msg);
+            return session.textMessage(EMPTY);
         }
     }
 
