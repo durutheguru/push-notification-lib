@@ -2,9 +2,6 @@ package com.julianduru.webpush.send.socket;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
 

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.KafkaUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -24,10 +25,15 @@ public class NotificationMessageConsumer {
 
 
     @KafkaListener(
-        topics = {"user-push-notification"}
+        topics = {"user-push-notification"},
+        groupId = "${random.uuid}"
     )
     public void onMessage(ConsumerRecord<String, String> record) {
-        log.info("User Notification Consumer Record: {}", record);
+        log.info(
+            "Kafka: GroupID: {}. User Notification Consumer Record: {}",
+            KafkaUtils.getConsumerGroupId(),
+            record
+        );
 
         var value = record.value();
         var values = value.split("\\|");
