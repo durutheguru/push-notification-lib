@@ -27,10 +27,11 @@ public class WebSocketNotificationDispatcher implements NotificationDispatcher {
             notification.getUserId(),
             Message.builder()
                 .messageType(Message.Type.TEXT)
-                .data(JSONUtil.asJsonString(notification, ""))
+                .data(notification)
                 .build()
         );
     }
 
 
 }
+

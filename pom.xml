@@ -12,7 +12,7 @@
 
 	<name>push-notification-lib</name>
 	<artifactId>push-notification-lib</artifactId>
-	<version>0.6.0-SNAPSHOT</version>
+	<version>0.7.0-SNAPSHOT</version>
 	<description>Library for handling server-side push notification functionality</description>
 
 	<properties>
@@ -93,6 +93,12 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
 			<version>8.0.19</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.julianduru</groupId>
+			<artifactId>queue-integration-lib</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
