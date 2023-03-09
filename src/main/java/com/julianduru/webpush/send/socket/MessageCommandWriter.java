@@ -1,8 +1,8 @@
 package com.julianduru.webpush.send.socket;
 
+import com.julianduru.queueintegrationlib.module.publish.OutgoingMessagePublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -12,28 +12,19 @@ import java.util.UUID;
  */
 @Component
 @RequiredArgsConstructor
-public class KafkaMessageCommandWriter {
+public class MessageCommandWriter {
 
 
     @Value("${code.config.kafka.user-command.topic-name}")
     private String userCommandTopicName;
 
 
-    private final KafkaTemplate<String, String> userCommandKafkaTemplate;
+    private final OutgoingMessagePublisher messagePublisher;
 
-
-
-    public void sendMessage(String key, String message) {
-        userCommandKafkaTemplate.send(
-            userCommandTopicName, key, message
-        );
-    }
 
 
     public void sendMessage(String message) {
-        userCommandKafkaTemplate.send(
-            userCommandTopicName, generateKey(), message
-        );
+        messagePublisher.publish(userCommandTopicName, message, true);
     }
 
 
@@ -46,4 +37,7 @@ public class KafkaMessageCommandWriter {
         );
     }
 
+
 }
+
+

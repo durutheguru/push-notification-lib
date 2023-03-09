@@ -1,7 +1,9 @@
 package com.julianduru.webpush.setup;
 
+import com.julianduru.queueintegrationlib.model.OperationStatus;
 import com.julianduru.queueintegrationlib.module.subscribe.DynamicConsumerFactory;
 import com.julianduru.queueintegrationlib.module.subscribe.context.ConsumerHandler;
+import com.julianduru.queueintegrationlib.module.subscribe.context.ConsumerPredicate;
 import com.julianduru.queueintegrationlib.module.subscribe.context.QueueConsumerContainer;
 import com.julianduru.webpush.annotation.PushServer;
 import lombok.RequiredArgsConstructor;
@@ -67,23 +69,44 @@ public class PushServerBeanProcessor implements BeanPostProcessor {
         var methods = bean.getClass().getMethods();
 
         for (Method method: methods) {
-            if (method.isAnnotationPresent(PushServer.class)) {
-                var nodeId = String.format(
-                    "push-server-%d-%d", RandomUtils.nextLong(0, 1_000_000_000), System.currentTimeMillis()
-                );
+            if (!method.isAnnotationPresent(PushServer.class)) {
+                continue;
+            }
 
-                log.info("Setting Push Server Node Id: {}", nodeId);
-                pushRegistry.initializeNode(nodeId);
-
-                consumerContainer.registerHandler(
-                    nodeId,
-                    ConsumerHandler.builder()
-                        .bean(bean)
-                        .method(method)
-                        .authorities(new String[]{})
-                        .build()
+            var supportedConsumer = ConsumerPredicate.findByMethod(method);
+            if (supportedConsumer.isEmpty()) {
+                throw new IllegalStateException(
+                    """
+                    Cannot proceed with Consumer registration. Unsupported Method Signature. 
+                    
+                    Supported signatures:
+                    - OperationStatus methodName(? payload)
+                    - OperationStatus methodName(String reference, ? payload)
+                    - OperationStatus methodName(String reference, Map<String, String> header, ? payload) 
+                    """
                 );
             }
+
+            var methodReturnType = method.getReturnType();
+            if (methodReturnType != OperationStatus.class) {
+                throw new IllegalStateException("Consumer method must return OperationStatus: " + method.getName());
+            }
+
+            var nodeId = String.format(
+                "push-server-%d-%d", RandomUtils.nextLong(0, 1_000_000_000), System.currentTimeMillis()
+            );
+
+            log.info("Setting Push Server Node Id: {}", nodeId);
+            pushRegistry.initializeNode(nodeId);
+
+            consumerContainer.registerHandler(
+                nodeId,
+                ConsumerHandler.builder()
+                    .bean(bean)
+                    .method(method)
+                    .authorities(new String[]{})
+                    .build()
+            );
         }
     }
 

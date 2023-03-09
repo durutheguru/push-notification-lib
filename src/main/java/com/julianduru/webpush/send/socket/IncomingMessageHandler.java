@@ -16,7 +16,7 @@ public class IncomingMessageHandler {
     private final WebSocketSession session;
 
 
-    private final KafkaMessageCommandWriter writer;
+    private final MessageCommandWriter writer;
 
 
     public void handleMessage(WebSocketMessage message) {

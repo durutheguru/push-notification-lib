@@ -1,6 +1,7 @@
 package com.julianduru.webpush.send;
 
 
+import com.julianduru.queueintegrationlib.model.OperationStatus;
 import com.julianduru.webpush.send.api.PushNotification;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 public interface NotificationDispatchGateway {
 
 
-    void dispatch(List<PushNotification> notifications);
+    OperationStatus dispatch(List<PushNotification> notifications);
 
 
 }

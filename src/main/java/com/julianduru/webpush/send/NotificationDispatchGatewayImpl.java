@@ -29,7 +29,7 @@ public class NotificationDispatchGatewayImpl implements NotificationDispatchGate
 
 
 
-    public void dispatch(List<PushNotification> notifications) {
+    public com.julianduru.queueintegrationlib.model.OperationStatus dispatch(List<PushNotification> notifications) {
         for (var notification : notifications) {
             try {
                 var responseList = notificationDispatchers.stream()
@@ -46,8 +46,11 @@ public class NotificationDispatchGatewayImpl implements NotificationDispatchGate
                 notificationRepository.save(notification);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
+                return com.julianduru.queueintegrationlib.model.OperationStatus.failure(e.getMessage());
             }
         }
+
+        return com.julianduru.queueintegrationlib.model.OperationStatus.success();
     }
 
 

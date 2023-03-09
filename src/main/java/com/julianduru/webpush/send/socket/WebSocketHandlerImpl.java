@@ -4,10 +4,10 @@ import com.julianduru.webpush.send.api.Message;
 import com.julianduru.webpush.send.api.OperationStatus;
 import com.julianduru.webpush.send.sse.UserIDEmittersContainer;
 import com.julianduru.webpush.service.auth.UserAuthenticationSource;
+import com.julianduru.webpush.setup.PushRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
@@ -34,7 +34,10 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
     private final List<UserAuthenticationSource> authenticationSources;
 
 
-    private final KafkaMessageCommandWriter writer;
+    private final PushRegistry pushRegistry;
+
+
+    private final MessageCommandWriter writer;
 
 
     // mapping of userId to emitters for userId
@@ -51,7 +54,12 @@ public class WebSocketHandlerImpl implements WebSocketHandler {
             getAuthenticationSource()
                 .fetchNotificationToken(session)
                 .flux()
-                .flatMap(token -> addMapping(token.userId(), token.token()))
+                .flatMap(
+                    token -> {
+                        pushRegistry.addUserToNodeMapping(token.userId());
+                        return addMapping(token.userId(), token.token());
+                    }
+                )
                 .doOnError(e -> log.error("Unable to authenticate user and create Message Source", e))
                 .map(outgoingMessageHandler::process)
         ).and(

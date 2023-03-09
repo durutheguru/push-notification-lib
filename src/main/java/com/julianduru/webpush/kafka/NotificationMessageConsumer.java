@@ -1,5 +1,6 @@
 package com.julianduru.webpush.kafka;
 
+import com.julianduru.queueintegrationlib.model.OperationStatus;
 import com.julianduru.webpush.annotation.PushServer;
 import com.julianduru.webpush.send.NotificationDispatchGateway;
 import com.julianduru.webpush.send.api.PushNotification;
@@ -25,13 +26,13 @@ public class NotificationMessageConsumer {
 
 
     @PushServer
-    public void onMessage(String reference, Map<String, String> header, String payload) {
+    public OperationStatus onMessage(String reference, Map<String, String> header, String payload) {
         log.info(
             "Kafka: GroupID: {}. Notification Received: {} - {}",
             KafkaUtils.getConsumerGroupId(), reference, payload
         );
 
-        dispatchGateway.dispatch(
+        return dispatchGateway.dispatch(
             List.of(
                 PushNotification.builder()
                     .uuid(UUID.randomUUID().toString())
